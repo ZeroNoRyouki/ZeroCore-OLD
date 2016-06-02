@@ -26,7 +26,12 @@ archivesBaseName = "zerocore"
 
 minecraft {
     version = "1.9-12.16.1.1887"
-    runDir = "run"
+	
+	if (file('../run').exists()) {
+		runDir = "../run"
+	} else {
+		runDir = "run"
+	}
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
