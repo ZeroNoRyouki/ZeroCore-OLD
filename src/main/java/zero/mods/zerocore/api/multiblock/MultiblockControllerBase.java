@@ -22,6 +22,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.FMLLog;
+import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
+import zero.mods.zerocore.api.multiblock.validation.ValidationError;
 import zero.mods.zerocore.util.WorldHelper;
 
 
@@ -31,7 +33,7 @@ import zero.mods.zerocore.util.WorldHelper;
  * 
  * Subordinate TileEntities implement the IMultiblockPart class and, generally, should not have an update() loop.
  */
-public abstract class MultiblockControllerBase {
+public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	public static final short DIMENSION_UNBOUNDED = -1;
 
 	// Multiblock stuff - do not mess with
@@ -71,7 +73,7 @@ public abstract class MultiblockControllerBase {
 	/**
 	 * Set whenever we validate the multiblock
 	 */
-	private MultiblockValidationException lastValidationException;
+	private ValidationError lastValidationError;
 	
 	protected boolean debugMode;
 	
@@ -87,7 +89,7 @@ public abstract class MultiblockControllerBase {
 		maximumCoord = null;
 
 		shouldCheckForDisconnections = true;
-		lastValidationException = null;
+		lastValidationError = null;
 		
 		debugMode = false;
 	}
@@ -334,15 +336,21 @@ public abstract class MultiblockControllerBase {
 	
 	
 	/**
-	 * @return An exception representing the last error encountered when trying to assemble this
+	 * @return the last validation error encountered when trying to assemble this
 	 * multiblock, or null if there is no error.
 	 */
-	public MultiblockValidationException getLastValidationException() { return lastValidationException; }
+	public ValidationError getLastError() {
+		return  this.lastValidationError;
+	}
+
+	public void setLastError(ValidationError error) {
+		this.lastValidationError = error;
+	}
 	
 	/**
-	 * Checks if a machine is whole. If not, throws an exception with the reason why.
+	 * Checks if a machine is whole. If not, set a validation error using IMultiblockValidator.
 	 */
-	protected abstract void isMachineWhole() throws MultiblockValidationException;
+	protected abstract boolean isMachineWhole(IMultiblockValidator validatorCallback);
 	
 	/**
 	 * Check if the machine is whole or not.
@@ -352,17 +360,10 @@ public abstract class MultiblockControllerBase {
 	 */
 	public void checkIfMachineIsWhole() {
 		AssemblyState oldState = this.assemblyState;
-		boolean isWhole;
-		lastValidationException = null;
-		try {
-			isMachineWhole();
-			isWhole = true;
-		} catch (MultiblockValidationException e) {
-			lastValidationException = e;
-			isWhole = false;
-		}
-		
-		if(isWhole) {
+
+		this.lastValidationError = null;
+
+		if (this.isMachineWhole(this)) {
 			// This will alter assembly state
 			assembleMachine(oldState);
 		}
@@ -541,11 +542,8 @@ public abstract class MultiblockControllerBase {
 	 * @param x X coordinate of the block being tested
 	 * @param y Y coordinate of the block being tested
 	 * @param z Z coordinate of the block being tested
-	 * @throws MultiblockValidationException if the tested block is not allowed on the machine's frame
 	 */
-	protected void isBlockGoodForFrame(World world, int x, int y, int z) throws MultiblockValidationException {
-		throw new MultiblockValidationException(String.format("%d, %d, %d - Block is not valid for use in the machine's interior", x, y, z));
-	}
+	protected abstract boolean isBlockGoodForFrame(World world, int x, int y, int z, IMultiblockValidator validatorCallback);
 
 	/**
 	 * The top consists of the top face, minus the edges.
@@ -553,11 +551,8 @@ public abstract class MultiblockControllerBase {
 	 * @param x X coordinate of the block being tested
 	 * @param y Y coordinate of the block being tested
 	 * @param z Z coordinate of the block being tested
-	 * @throws MultiblockValidationException if the tested block is not allowed on the machine's top face
 	 */
-	protected void isBlockGoodForTop(World world, int x, int y, int z) throws MultiblockValidationException {
-		throw new MultiblockValidationException(String.format("%d, %d, %d - Block is not valid for use in the machine's interior", x, y, z));
-	}
+	protected abstract boolean isBlockGoodForTop(World world, int x, int y, int z, IMultiblockValidator validatorCallback);
 	
 	/**
 	 * The bottom consists of the bottom face, minus the edges.
@@ -565,11 +560,8 @@ public abstract class MultiblockControllerBase {
 	 * @param x X coordinate of the block being tested
 	 * @param y Y coordinate of the block being tested
 	 * @param z Z coordinate of the block being tested
-	 * @throws MultiblockValidationException if the tested block is not allowed on the machine's bottom face
 	 */
-	protected void isBlockGoodForBottom(World world, int x, int y, int z) throws MultiblockValidationException {
-		throw new MultiblockValidationException(String.format("%d, %d, %d - Block is not valid for use in the machine's interior", x, y, z));
-	}
+	protected abstract boolean isBlockGoodForBottom(World world, int x, int y, int z, IMultiblockValidator validatorCallback);
 	
 	/**
 	 * The sides consists of the N/E/S/W-facing faces, minus the edges.
@@ -577,11 +569,8 @@ public abstract class MultiblockControllerBase {
 	 * @param x X coordinate of the block being tested
 	 * @param y Y coordinate of the block being tested
 	 * @param z Z coordinate of the block being tested
-	 * @throws MultiblockValidationException if the tested block is not allowed on the machine's side faces
 	 */
-	protected void isBlockGoodForSides(World world, int x, int y, int z) throws MultiblockValidationException {
-		throw new MultiblockValidationException(String.format("%d, %d, %d - Block is not valid for use in the machine's interior", x, y, z));
-	}
+	protected abstract boolean isBlockGoodForSides(World world, int x, int y, int z, IMultiblockValidator validatorCallback);
 	
 	/**
 	 * The interior is any block that does not touch blocks outside the machine.
@@ -589,11 +578,8 @@ public abstract class MultiblockControllerBase {
 	 * @param x X coordinate of the block being tested
 	 * @param y Y coordinate of the block being tested
 	 * @param z Z coordinate of the block being tested
-	 * @throws MultiblockValidationException if the tested block is not allowed in the machine's interior
 	 */
-	protected void isBlockGoodForInterior(World world, int x, int y, int z) throws MultiblockValidationException {
-		throw new MultiblockValidationException(String.format("%d, %d, %d - Block is not valid for use in the machine's interior", x, y, z));
-	}
+	protected abstract boolean isBlockGoodForInterior(World world, int x, int y, int z, IMultiblockValidator validatorCallback);
 	
 	/**
 	 * @return The reference coordinate, the block with the lowest x, y, z coordinates, evaluated in that order.

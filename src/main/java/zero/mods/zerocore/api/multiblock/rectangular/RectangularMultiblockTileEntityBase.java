@@ -11,10 +11,10 @@ package zero.mods.zerocore.api.multiblock.rectangular;
  */
 
 import net.minecraft.util.math.BlockPos;
+import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import zero.mods.zerocore.lib.BlockFacings;
 import zero.mods.zerocore.api.multiblock.MultiblockControllerBase;
 import zero.mods.zerocore.api.multiblock.MultiblockTileEntityBase;
-import zero.mods.zerocore.api.multiblock.MultiblockValidationException;
 
 public abstract class RectangularMultiblockTileEntityBase extends
 		MultiblockTileEntityBase {
@@ -149,13 +149,14 @@ public abstract class RectangularMultiblockTileEntityBase extends
 	}
 	
 	///// Validation Helpers (IMultiblockPart)
-	public abstract void isGoodForFrame() throws MultiblockValidationException;
 
-	public abstract void isGoodForSides() throws MultiblockValidationException;
+	public abstract boolean isGoodForFrame(IMultiblockValidator validatorCallback);
 
-	public abstract void isGoodForTop() throws MultiblockValidationException;
+	public abstract boolean isGoodForSides(IMultiblockValidator validatorCallback);
 
-	public abstract void isGoodForBottom() throws MultiblockValidationException;
+	public abstract boolean isGoodForTop(IMultiblockValidator validatorCallback);
 
-	public abstract void isGoodForInterior() throws MultiblockValidationException;
+	public abstract boolean isGoodForBottom(IMultiblockValidator validatorCallback);
+
+	public abstract boolean isGoodForInterior(IMultiblockValidator validatorCallback);
 }

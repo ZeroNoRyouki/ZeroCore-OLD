@@ -13,8 +13,11 @@ package zero.mods.zerocore.api.multiblock.rectangular;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import zero.mods.zerocore.api.multiblock.MultiblockControllerBase;
-import zero.mods.zerocore.api.multiblock.MultiblockValidationException;
+import zero.mods.zerocore.api.multiblock.validation.InvalidMachineSize;
+import zero.mods.zerocore.api.multiblock.validation.InvalidPart;
+import zero.mods.zerocore.api.multiblock.validation.ValidationError;
 
 public abstract class RectangularMultiblockControllerBase extends
 		MultiblockControllerBase {
@@ -26,9 +29,12 @@ public abstract class RectangularMultiblockControllerBase extends
 	/**
 	 * @return True if the machine is "whole" and should be assembled. False otherwise.
 	 */
-	protected void isMachineWhole() throws MultiblockValidationException {
+	@Override
+	protected boolean isMachineWhole(IMultiblockValidator validatorCallback) {
+
 		if(connectedParts.size() < getMinimumNumberOfBlocksForAssembledMachine()) {
-			throw new MultiblockValidationException("Machine is too small.");
+			validatorCallback.setLastError(ValidationError.VALIDATION_ERROR_TOO_FEW_PARTS);
+			return false;
 		}
 		
 		BlockPos maximumCoord = this.getMaximumCoord();
@@ -53,18 +59,20 @@ public abstract class RectangularMultiblockControllerBase extends
 		int minYSize = this.getMinimumYSize();
 		int minZSize = this.getMinimumZSize();
 		
-		if (maxXSize > 0 && deltaX > maxXSize) { throw new MultiblockValidationException(String.format("Machine is too large, it may be at most %d blocks in the X dimension", maxXSize)); }
-		if (maxYSize > 0 && deltaY > maxYSize) { throw new MultiblockValidationException(String.format("Machine is too large, it may be at most %d blocks in the Y dimension", maxYSize)); }
-		if (maxZSize > 0 && deltaZ > maxZSize) { throw new MultiblockValidationException(String.format("Machine is too large, it may be at most %d blocks in the Z dimension", maxZSize)); }
-		if (deltaX < minXSize) { throw new MultiblockValidationException(String.format("Machine is too small, it must be at least %d blocks in the X dimension", minXSize)); }
-		if (deltaY < minYSize) { throw new MultiblockValidationException(String.format("Machine is too small, it must be at least %d blocks in the Y dimension", minYSize)); }
-		if (deltaZ < minZSize) { throw new MultiblockValidationException(String.format("Machine is too small, it must be at least %d blocks in the Z dimension", minZSize)); }
+		if (maxXSize > 0 && deltaX > maxXSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxXSize, 'X')); return false; }
+		if (maxYSize > 0 && deltaY > maxYSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxYSize, 'Y')); return false; }
+		if (maxZSize > 0 && deltaZ > maxZSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxZSize, 'Z')); return false; }
+		if (deltaX < minXSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_small", minXSize, 'X')); return false; }
+		if (deltaY < minYSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_small", minYSize, 'Y')); return false; }
+		if (deltaZ < minZSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_small", minZSize, 'Z')); return false; }
 
 		// Now we run a simple check on each block within that volume.
 		// Any block deviating = NO DEAL SIR
 		TileEntity te;
 		RectangularMultiblockTileEntityBase part;
 		Class<? extends RectangularMultiblockControllerBase> myClass = this.getClass();
+		int extremes;
+		boolean isPartValid;
 
 		for(int x = minX; x <= maxX; x++) {
 			for(int y = minY; y <= maxY; y++) {
@@ -76,9 +84,10 @@ public abstract class RectangularMultiblockControllerBase extends
 						part = (RectangularMultiblockTileEntityBase)te;
 						
 						// Ensure this part should actually be allowed within a cube of this controller's type
-						if(!myClass.equals(part.getMultiblockControllerType()))
-						{
-							throw new MultiblockValidationException(String.format("Part @ %d, %d, %d is incompatible with machines of type %s", x, y, z, myClass.getSimpleName()));
+						if(!myClass.equals(part.getMultiblockControllerType())) {
+
+							validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part", x, y, z));
+							return false;
 						}
 					}
 					else {
@@ -87,7 +96,8 @@ public abstract class RectangularMultiblockControllerBase extends
 					}
 					
 					// Validate block type against both part-level and material-level validators.
-					int extremes = 0;
+					extremes = 0;
+
 					if(x == minX) { extremes++; }
 					if(y == minY) { extremes++; }
 					if(z == minZ) { extremes++; }
@@ -95,53 +105,74 @@ public abstract class RectangularMultiblockControllerBase extends
 					if(x == maxX) { extremes++; }
 					if(y == maxY) { extremes++; }
 					if(z == maxZ) { extremes++; }
-					
+
 					if(extremes >= 2) {
-						if(part != null) {
-							part.isGoodForFrame();
-						}
-						else {
-							isBlockGoodForFrame(this.worldObj, x, y, z);
+
+						isPartValid = part != null ? part.isGoodForFrame(validatorCallback) : this.isBlockGoodForFrame(this.worldObj, x, y, z, validatorCallback);
+
+						if (!isPartValid) {
+
+							if (null == validatorCallback.getLastError())
+								validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_frame", x, y, z));
+
+							return false;
 						}
 					}
 					else if(extremes == 1) {
 						if(y == maxY) {
-							if(part != null) {
-								part.isGoodForTop();
-							}
-							else {
-								isBlockGoodForTop(this.worldObj, x, y, z);
+
+							isPartValid = part != null ? part.isGoodForTop(validatorCallback) : this.isBlockGoodForTop(this.worldObj, x, y, z, validatorCallback);
+
+							if (!isPartValid) {
+
+								if (null == validatorCallback.getLastError())
+									validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_top", x, y, z));
+
+								return false;
 							}
 						}
 						else if(y == minY) {
-							if(part != null) {
-								part.isGoodForBottom();
-							}
-							else {
-								isBlockGoodForBottom(this.worldObj, x, y, z);
+
+							isPartValid = part != null ? part.isGoodForBottom(validatorCallback) : this.isBlockGoodForBottom(this.worldObj, x, y, z, validatorCallback);
+
+							if (!isPartValid) {
+
+								if (null == validatorCallback.getLastError())
+									validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_bottom", x, y, z));
+
+								return false;
 							}
 						}
 						else {
 							// Side
-							if(part != null) {
-								part.isGoodForSides();
-							}
-							else {
-								isBlockGoodForSides(this.worldObj, x, y, z);
+							isPartValid = part != null ? part.isGoodForSides(validatorCallback) : this.isBlockGoodForSides(this.worldObj, x, y, z, validatorCallback);
+
+							if (!isPartValid) {
+
+								if (null == validatorCallback.getLastError())
+									validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_sides", x, y, z));
+
+								return false;
 							}
 						}
 					}
 					else {
-						if(part != null) {
-							part.isGoodForInterior();
-						}
-						else {
-							isBlockGoodForInterior(this.worldObj, x, y, z);
+
+						isPartValid = part != null ? part.isGoodForInterior(validatorCallback) : this.isBlockGoodForInterior(this.worldObj, x, y, z, validatorCallback);
+
+						if (!isPartValid) {
+
+							if (null == validatorCallback.getLastError())
+								validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_interior", x, y, z));
+
+							return false;
 						}
 					}
 				}
 			}
 		}
+
+		return true;
 	}	
 	
 }

@@ -42,9 +42,7 @@ public interface IMultiblockPart /*extends ModTileEntity*/ {
 	 */
 	BlockPos getPos();
 
-
 	boolean isInvalid();
-
 	
 	// Multiblock connection-logic callbacks
 	
