@@ -1,0 +1,16 @@
+[
+{
+  "modid": "zerocore",
+  "name": "Zero CORE",
+  "description": "PUT-THE-MOD-DESCRIPTION-HERE",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["ZeroNoRyouki"],
+  "credits": "PUT-THE-CREDITS-HERE",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
