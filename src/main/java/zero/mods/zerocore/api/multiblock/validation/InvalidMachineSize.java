@@ -1,10 +1,21 @@
 package zero.mods.zerocore.api.multiblock.validation;
 
-import net.minecraft.util.text.translation.I18n;
+/*
+ * A multiblock library for making irregularly-shaped multiblock machines
+ *
+ * Original author: Erogenous Beef
+ * https://github.com/erogenousbeef/BeefCore
+ *
+ * Ported to Minecraft 1.9 by ZeroNoRyouki
+ * https://github.com/ZeroNoRyouki/ZeroCore
+ */
+
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class InvalidMachineSize extends ValidationError {
 
-    public InvalidMachineSize(String messageResourceKey, int correctSize, char dimension) {
+    public InvalidMachineSize(String messageResourceKey, int correctSize, String dimension) {
 
         super(messageResourceKey);
         this._correctSize = correctSize;
@@ -12,11 +23,11 @@ public class InvalidMachineSize extends ValidationError {
     }
 
     @Override
-    public String getValidationMessage() {
+    public ITextComponent getChatMessage() {
 
-        return I18n.translateToLocalFormatted(this._messageKey, this._correctSize, this._dimension);
+        return new TextComponentTranslation(this._messageKey, this._correctSize, this._dimension);
     }
 
-    protected char _dimension;
+    protected String _dimension;
     protected int _correctSize;
 }

@@ -1,12 +1,20 @@
 package zero.mods.zerocore.api.multiblock.validation;
 
+/*
+ * A multiblock library for making irregularly-shaped multiblock machines
+ *
+ * Original author: Erogenous Beef
+ * https://github.com/erogenousbeef/BeefCore
+ *
+ * Ported to Minecraft 1.9 by ZeroNoRyouki
+ * https://github.com/ZeroNoRyouki/ZeroCore
+ */
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class ValidationError {
 
-    public static final ValidationError VALIDATION_SUCCESS = new ValidationError("zerocore:api.multiblock.validation.success");
     public static final ValidationError VALIDATION_ERROR_TOO_FEW_PARTS = new ValidationError("zerocore:api.multiblock.validation.too_few_parts");
 
     public ValidationError(String messageResourceKey) {
@@ -14,16 +22,10 @@ public class ValidationError {
         this._messageKey = messageResourceKey;
     }
 
-    public String getValidationMessage() {
+    public ITextComponent getChatMessage() {
 
-        return I18n.translateToLocal(this._messageKey);
+        return new TextComponentTranslation(this._messageKey);
     }
 
     protected String _messageKey;
-
-
-
-
-
-
 }

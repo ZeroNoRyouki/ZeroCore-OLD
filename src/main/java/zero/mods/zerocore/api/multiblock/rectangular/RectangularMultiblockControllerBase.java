@@ -59,12 +59,12 @@ public abstract class RectangularMultiblockControllerBase extends
 		int minYSize = this.getMinimumYSize();
 		int minZSize = this.getMinimumZSize();
 		
-		if (maxXSize > 0 && deltaX > maxXSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxXSize, 'X')); return false; }
-		if (maxYSize > 0 && deltaY > maxYSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxYSize, 'Y')); return false; }
-		if (maxZSize > 0 && deltaZ > maxZSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxZSize, 'Z')); return false; }
-		if (deltaX < minXSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_small", minXSize, 'X')); return false; }
-		if (deltaY < minYSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_small", minYSize, 'Y')); return false; }
-		if (deltaZ < minZSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_small", minZSize, 'Z')); return false; }
+		if (maxXSize > 0 && deltaX > maxXSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxXSize, "X")); return false; }
+		if (maxYSize > 0 && deltaY > maxYSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxYSize, "Y")); return false; }
+		if (maxZSize > 0 && deltaZ > maxZSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxZSize, "Z")); return false; }
+		if (deltaX < minXSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:zerocore:api.multiblock.validation.machine_too_small", minXSize, "X")); return false; }
+		if (deltaY < minYSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:zerocore:api.multiblock.validation.machine_too_small", minYSize, "Y")); return false; }
+		if (deltaZ < minZSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:zerocore:api.multiblock.validation.machine_too_small", minZSize, "Z")); return false; }
 
 		// Now we run a simple check on each block within that volume.
 		// Any block deviating = NO DEAL SIR

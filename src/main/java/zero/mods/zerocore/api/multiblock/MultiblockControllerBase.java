@@ -40,7 +40,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	protected World worldObj;
 	
 	// Disassembled -> Assembled; Assembled -> Disassembled OR Paused; Paused -> Assembled
-	protected enum AssemblyState { Disassembled, Assembled, Paused };
+	protected enum AssemblyState { Disassembled, Assembled, Paused }
 	protected AssemblyState assemblyState;
 
 	protected HashSet<IMultiblockPart> connectedParts;
@@ -479,7 +479,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	/**
 	 * Driver for the update loop. If the machine is assembled, runs
 	 * the game logic update method.
-	 * @see erogenousbeef.core.multiblock.MultiblockControllerBase#update() //TODO Fix this Javadoc
+	 * @see zero.mods.zerocore.api.multiblock.MultiblockControllerBase#updateServer()
 	 */
 	public final void updateMultiblockEntity() {
 		if(connectedParts.isEmpty()) {
@@ -956,6 +956,4 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		TileEntity saveTe = worldObj.getTileEntity(referenceCoord);
 		worldObj.markChunkDirty(referenceCoord, saveTe);
 	}
-
-	
 }

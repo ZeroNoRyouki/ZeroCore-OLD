@@ -432,6 +432,4 @@ public class MultiblockWorldRegistry {
 			orphanedParts.addAll(parts);
 		}
 	}
-	
-	private String clientOrServer() { return worldObj.isRemote ? "CLIENT" : "SERVER"; }
 }

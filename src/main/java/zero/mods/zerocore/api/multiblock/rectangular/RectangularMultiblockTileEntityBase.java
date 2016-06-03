@@ -57,8 +57,7 @@ public abstract class RectangularMultiblockTileEntityBase extends
 		super.onAttached(newController);
 		recalculateOutwardsDirection(newController.getMinimumCoord(), newController.getMaximumCoord());
 	}
-	
-	
+
 	@Override
 	public void onMachineAssembled(MultiblockControllerBase controller) {
 

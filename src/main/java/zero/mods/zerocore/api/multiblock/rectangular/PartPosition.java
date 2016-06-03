@@ -46,7 +46,6 @@ public enum PartPosition  implements IStringSerializable {
 		return PropertyEnum.create(name, PartPosition.class);
 	}
 
-
 	@Override
 	public String getName() {
 
