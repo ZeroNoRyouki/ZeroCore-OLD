@@ -17,15 +17,17 @@ public class ValidationError {
 
     public static final ValidationError VALIDATION_ERROR_TOO_FEW_PARTS = new ValidationError("zerocore:api.multiblock.validation.too_few_parts");
 
-    public ValidationError(String messageResourceKey) {
+    public ValidationError(String messageFormatStringResourceKey, Object... messageParameters) {
 
-        this._messageKey = messageResourceKey;
+        this._resourceKey = messageFormatStringResourceKey;
+        this._parameters = messageParameters;
     }
 
     public ITextComponent getChatMessage() {
 
-        return new TextComponentTranslation(this._messageKey);
+        return new TextComponentTranslation(this._resourceKey, _parameters);
     }
 
-    protected String _messageKey;
+    protected final String _resourceKey;
+    protected final Object[] _parameters;
 }
