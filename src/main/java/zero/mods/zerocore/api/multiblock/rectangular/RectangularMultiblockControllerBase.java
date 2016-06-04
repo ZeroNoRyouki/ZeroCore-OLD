@@ -161,7 +161,7 @@ public abstract class RectangularMultiblockControllerBase extends
 						if (!isPartValid) {
 
 							if (null == validatorCallback.getLastError())
-								validatorCallback.setLastError("zerocore:api.multiblock.validation.invalid_part_for_interior", x, y, z);
+								validatorCallback.setLastError("zerocore:api.multiblock.validation.reactor.invalid_part_for_interior", x, y, z);
 
 							return false;
 						}
