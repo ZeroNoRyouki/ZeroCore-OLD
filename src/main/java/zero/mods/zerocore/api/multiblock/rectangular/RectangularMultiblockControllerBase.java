@@ -15,8 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import zero.mods.zerocore.api.multiblock.MultiblockControllerBase;
-import zero.mods.zerocore.api.multiblock.validation.InvalidMachineSize;
-import zero.mods.zerocore.api.multiblock.validation.InvalidPart;
 import zero.mods.zerocore.api.multiblock.validation.ValidationError;
 
 public abstract class RectangularMultiblockControllerBase extends
@@ -59,12 +57,12 @@ public abstract class RectangularMultiblockControllerBase extends
 		int minYSize = this.getMinimumYSize();
 		int minZSize = this.getMinimumZSize();
 		
-		if (maxXSize > 0 && deltaX > maxXSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxXSize, "X")); return false; }
-		if (maxYSize > 0 && deltaY > maxYSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxYSize, "Y")); return false; }
-		if (maxZSize > 0 && deltaZ > maxZSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:api.multiblock.validation.machine_too_large", maxZSize, "Z")); return false; }
-		if (deltaX < minXSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:zerocore:api.multiblock.validation.machine_too_small", minXSize, "X")); return false; }
-		if (deltaY < minYSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:zerocore:api.multiblock.validation.machine_too_small", minYSize, "Y")); return false; }
-		if (deltaZ < minZSize) { validatorCallback.setLastError(new InvalidMachineSize("zerocore:zerocore:api.multiblock.validation.machine_too_small", minZSize, "Z")); return false; }
+		if (maxXSize > 0 && deltaX > maxXSize) { validatorCallback.setLastError("zerocore:api.multiblock.validation.machine_too_large", maxXSize, "X"); return false; }
+		if (maxYSize > 0 && deltaY > maxYSize) { validatorCallback.setLastError("zerocore:api.multiblock.validation.machine_too_large", maxYSize, "Y"); return false; }
+		if (maxZSize > 0 && deltaZ > maxZSize) { validatorCallback.setLastError("zerocore:api.multiblock.validation.machine_too_large", maxZSize, "Z"); return false; }
+		if (deltaX < minXSize) { validatorCallback.setLastError("zerocore:zerocore:api.multiblock.validation.machine_too_small", minXSize, "X"); return false; }
+		if (deltaY < minYSize) { validatorCallback.setLastError("zerocore:zerocore:api.multiblock.validation.machine_too_small", minYSize, "Y"); return false; }
+		if (deltaZ < minZSize) { validatorCallback.setLastError("zerocore:zerocore:api.multiblock.validation.machine_too_small", minZSize, "Z"); return false; }
 
 		// Now we run a simple check on each block within that volume.
 		// Any block deviating = NO DEAL SIR
@@ -86,7 +84,7 @@ public abstract class RectangularMultiblockControllerBase extends
 						// Ensure this part should actually be allowed within a cube of this controller's type
 						if(!myClass.equals(part.getMultiblockControllerType())) {
 
-							validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part", x, y, z));
+							validatorCallback.setLastError("zerocore:api.multiblock.validation.invalid_part", x, y, z);
 							return false;
 						}
 					}
@@ -113,7 +111,7 @@ public abstract class RectangularMultiblockControllerBase extends
 						if (!isPartValid) {
 
 							if (null == validatorCallback.getLastError())
-								validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_frame", x, y, z));
+								validatorCallback.setLastError("zerocore:api.multiblock.validation.invalid_part_for_frame", x, y, z);
 
 							return false;
 						}
@@ -126,7 +124,7 @@ public abstract class RectangularMultiblockControllerBase extends
 							if (!isPartValid) {
 
 								if (null == validatorCallback.getLastError())
-									validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_top", x, y, z));
+									validatorCallback.setLastError("zerocore:api.multiblock.validation.invalid_part_for_top", x, y, z);
 
 								return false;
 							}
@@ -138,7 +136,7 @@ public abstract class RectangularMultiblockControllerBase extends
 							if (!isPartValid) {
 
 								if (null == validatorCallback.getLastError())
-									validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_bottom", x, y, z));
+									validatorCallback.setLastError("zerocore:api.multiblock.validation.invalid_part_for_bottom", x, y, z);
 
 								return false;
 							}
@@ -150,7 +148,7 @@ public abstract class RectangularMultiblockControllerBase extends
 							if (!isPartValid) {
 
 								if (null == validatorCallback.getLastError())
-									validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_sides", x, y, z));
+									validatorCallback.setLastError("zerocore:api.multiblock.validation.invalid_part_for_sides", x, y, z);
 
 								return false;
 							}
@@ -163,7 +161,7 @@ public abstract class RectangularMultiblockControllerBase extends
 						if (!isPartValid) {
 
 							if (null == validatorCallback.getLastError())
-								validatorCallback.setLastError(new InvalidPart("zerocore:api.multiblock.validation.invalid_part_for_interior", x, y, z));
+								validatorCallback.setLastError("zerocore:api.multiblock.validation.invalid_part_for_interior", x, y, z);
 
 							return false;
 						}

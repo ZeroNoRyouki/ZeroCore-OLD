@@ -333,18 +333,33 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 * @return The minimum Z dimension size of the machine
 	 */
 	protected int getMinimumZSize() { return 1; }
-	
-	
+
 	/**
-	 * @return the last validation error encountered when trying to assemble this
-	 * multiblock, or null if there is no error.
+	 * @return the last validation error encountered when trying to assemble the multiblock, or null if there is no error.
 	 */
 	public ValidationError getLastError() {
-		return  this.lastValidationError;
+		return this.lastValidationError;
 	}
 
+	/**
+	 * Set a validation error
+	 * @param error the error
+	 */
 	public void setLastError(ValidationError error) {
+
+		if (null == error)
+			throw new IllegalArgumentException("The validation error can't be null");
+
 		this.lastValidationError = error;
+	}
+
+	/**
+	 * Set a validation error
+	 * @param messageFormatStringResourceKey a translation key for a message or a message format string
+	 * @param messageParameters optional parameters for a message format string
+	 */
+	public void setLastError(String messageFormatStringResourceKey, Object... messageParameters) {
+		this.lastValidationError = new ValidationError(messageFormatStringResourceKey, messageParameters);
 	}
 	
 	/**
