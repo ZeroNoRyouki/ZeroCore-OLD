@@ -330,6 +330,18 @@ public abstract class MultiblockTileEntityBase extends TileEntity implements IMu
 		this.markDirty();
 		worldObj.markChunkDirty(this.getPos(), this);
 	}
+
+
+	//// Helper functions for notifying neighboring blocks
+	protected void notifyNeighborsOfBlockChange() {
+		worldObj.notifyNeighborsOfStateChange(this.getPos(), this.getBlockType());
+	}
+
+	@Deprecated // not implemented yet
+	protected void notifyNeighborsOfTileChange() {
+		//worldObj.func_147453_f(xCoord, yCoord, zCoord, getBlockType());
+
+	}
 	
 	///// Private/Protected Logic Helpers
 	/*
