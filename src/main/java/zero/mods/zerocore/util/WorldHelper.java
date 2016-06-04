@@ -1,5 +1,6 @@
 package zero.mods.zerocore.util;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -102,15 +103,28 @@ public class WorldHelper {
     public static boolean blockChunkExists(IChunkProvider chunkProvider, BlockPos position) {
 
         return null != chunkProvider.getLoadedChunk(WorldHelper.getChunkXFromBlock(position), WorldHelper.getChunkZFromBlock(position));
-   }
+    }
 
+    /**
+     * force a block update at the given position
+     * @param world the world to update
+     * @param position the position of the block begin updated
+     * @param oldState the old state of the block begin updated. if null, the current state will be retrieved from the world
+     * @param newState the new state for the block begin updated. if null, the final value of oldState will be used
+     */
+    public static void notifyBlockUpdate(World world, BlockPos position, IBlockState oldState, IBlockState newState) {
 
+        if (null == oldState)
+            oldState = world.getBlockState(position);
 
+        if (null == newState)
+            newState = oldState;
+
+        world.notifyBlockUpdate(position, oldState, newState, 3);
+    }
 
     private WorldHelper() {
     }
 
-
     public static final int[] EMPTY_INT_ARRAY = new int[0];
-
 }
