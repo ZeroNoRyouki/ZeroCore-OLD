@@ -155,6 +155,16 @@ public final class BlockFacings {
         return BlockFacings.from(BlockFacings.computeHash(down, up, north, south, west, east));
     }
 
+    /**
+     * Return a BlockFacing object that describe the passed in state
+     * @param facings an array describing the state. the elements of the array must be filled in following the order in EnumFacing.VALUES
+     * @return a BlockFacing object
+     */
+    public static BlockFacings from(boolean[] facings) {
+
+        return BlockFacings.from(BlockFacings.computeHash(facings));
+    }
+
     static BlockFacings from(Byte hash) {
 
         BlockFacings facings = BlockFacings.s_cache.get(hash);
@@ -198,8 +208,24 @@ public final class BlockFacings {
         return Byte.valueOf(hash);
     }
 
-    private byte _value;
+    static Byte computeHash(boolean[] facings) {
 
+        byte hash = 0;
+        int len = null == facings ? -1 : facings.length;
+
+        if (len < 0 || len > EnumFacing.VALUES.length)
+            throw new IllegalArgumentException("Invalid length of facings array");
+
+        for (int i = 0; i < len; ++i) {
+
+            if (facings[i])
+                hash |= (1 << EnumFacing.VALUES[i].getIndex());
+        }
+
+        return Byte.valueOf(hash);
+    }
+
+    private byte _value;
 
     private static HashMap<Byte, BlockFacings> s_cache;
 
@@ -233,5 +259,4 @@ public final class BlockFacings {
         hash = BlockFacings.computeHash(false, false, false, false, false, true);
         s_cache.put(hash, EAST = new BlockFacings(hash.byteValue()));
     }
-
 }
