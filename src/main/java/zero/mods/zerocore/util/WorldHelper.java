@@ -2,6 +2,8 @@ package zero.mods.zerocore.util;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -14,6 +16,26 @@ import java.util.Random;
 
 public class WorldHelper {
 
+    /**
+     * Test if we were called by the Server thread or by another thread in a server environment
+     *
+     * @param world A valid world instance
+     */
+    public static boolean calledByLogicalServer(World world) {
+
+        return !world.isRemote;
+    }
+
+    /**
+     * Test if we were called by the Client thread or by another thread in a client-only or combined environment
+     *
+     * @param world A valid world instance
+     */
+    public static boolean calledByLogicalClient(World world) {
+
+        return world.isRemote;
+    }
+
     public static boolean isEntityInRange(Entity entity, double x, double y, double z, double range) {
 
         return entity.getDistanceSq(x + 0.5, y + 0.5, z + 0.5) < (range * range);
@@ -25,7 +47,8 @@ public class WorldHelper {
     }
 
 
-    public static void spawnVanillaParticles(World world, EnumParticleTypes particle, int minCount, int maxCount, int x, int y, int z, int offsetX, int offsetY, int offsetZ) {
+    public static void spawnVanillaParticles(World world, EnumParticleTypes particle, int minCount, int maxCount,
+                                             int x, int y, int z, int offsetX, int offsetY, int offsetZ) {
 
         if (null == world)
             return;
@@ -70,6 +93,50 @@ public class WorldHelper {
             }
     }
 
+    /**
+     * Spawn an ItemStack in the world
+     * This replace StacksHelper.spawnInWorld
+     *
+     * @param stack the stack
+     * @param world the world to spawn in
+     * @param x spawn coordinates
+     * @param y spawn coordinates
+     * @param z spawn coordinates
+     * @param withMomentum if true, add momentum to the stack
+     */
+    public static void spawnItemStack(ItemStack stack, World world, double x, double y, double z, boolean withMomentum) {
+
+        float x2, y2, z2;
+
+        if (withMomentum) {
+            x2 = world.rand.nextFloat() * 0.8F + 0.1F;
+            y2 = world.rand.nextFloat() * 0.8F + 0.1F;
+            z2 = world.rand.nextFloat() * 0.8F + 0.1F;
+        } else {
+            x2 = 0.5F;
+            y2 = 0.0F;
+            z2 = 0.5F;
+        }
+
+        EntityItem entity = new EntityItem(world, x + x2, y + y2, z + z2, stack.copy());
+
+        if (withMomentum) {
+            entity.motionX = (float) world.rand.nextGaussian() * 0.05F;
+            entity.motionY = (float) world.rand.nextGaussian() * 0.05F + 0.2F;
+            entity.motionZ = (float) world.rand.nextGaussian() * 0.05F;
+        } else {
+            entity.motionY = -0.05F;
+            entity.motionX = 0;
+            entity.motionZ = 0;
+        }
+
+        world.spawnEntityInWorld(entity);
+    }
+
+    /*
+    Chunk and block update helpers
+     */
+
     public static int getChunkXFromBlock(int blockX) {
 
         return blockX >> 4;
@@ -100,6 +167,7 @@ public class WorldHelper {
         return ChunkCoordIntPair.chunkXZ2Int(WorldHelper.getChunkXFromBlock(position), WorldHelper.getChunkZFromBlock(position));
     }
 
+    @Deprecated // use World.isBlockLoaded instead
     public static boolean blockChunkExists(IChunkProvider chunkProvider, BlockPos position) {
 
         return null != chunkProvider.getLoadedChunk(WorldHelper.getChunkXFromBlock(position), WorldHelper.getChunkZFromBlock(position));
