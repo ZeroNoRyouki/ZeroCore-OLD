@@ -17,7 +17,9 @@ public enum PartPosition  implements IStringSerializable {
 	Unknown,
 	Interior,
 	FrameCorner,
-	Frame,
+	FrameEastWest,
+	FrameSouthNorth,
+	FrameUpDown,
 	TopFace,
 	BottomFace,
 	NorthFace,
@@ -35,6 +37,19 @@ public enum PartPosition  implements IStringSerializable {
 			case SouthFace:
 			case EastFace:
 			case WestFace:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	public boolean isFrame() {
+
+		switch (this) {
+
+			case FrameEastWest:
+			case FrameSouthNorth:
+			case FrameUpDown:
 				return true;
 			default:
 				return false;

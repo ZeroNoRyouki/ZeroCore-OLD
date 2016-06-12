@@ -113,10 +113,16 @@ public abstract class RectangularMultiblockTileEntityBase extends
 		else if (facesMatching >= 3)
 			this.position = PartPosition.FrameCorner;
 
-		else if (facesMatching == 2)
-			this.position = PartPosition.Frame;
+		else if (facesMatching == 2) {
 
-		else {
+			if (!eastFacing && !westFacing)
+				this.position = PartPosition.FrameEastWest;
+			else if (!southFacing && !northFacing)
+				this.position = PartPosition.FrameSouthNorth;
+			else
+				this.position = PartPosition.FrameUpDown;
+
+		} else {
 
 			// only 1 face matches
 
