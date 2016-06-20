@@ -1,6 +1,7 @@
 package cofh.api.block;
 
 import net.minecraft.block.Block;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 
@@ -18,32 +19,24 @@ public interface IBlockAppearance {
 	 *
 	 * @param world
 	 *            Reference to the world.
-	 * @param x
-	 *            X coordinate of the block.
-	 * @param y
-	 *            Y coordinate of the block.
-	 * @param z
-	 *            Z coordinate of the block.
+	 * @param pos
+	 *            Coordinates of the block.
 	 * @param side
 	 *            The side of the block.
 	 */
-	public Block getVisualBlock(IBlockAccess world, int x, int y, int z, EnumFacing side);
+	public Block getVisualBlock(IBlockAccess world, BlockPos pos, EnumFacing side);
 
 	/**
 	 * This function returns metadata of the block that is being shown on a given side.
 	 *
 	 * @param world
 	 *            Reference to the world.
-	 * @param x
-	 *            X coordinate of the block.
-	 * @param y
-	 *            Y coordinate of the block.
-	 * @param z
-	 *            Z coordinate of the block.
+	 * @param pos
+	 *            Coordinates of the block.
 	 * @param side
 	 *            The side of the block.
 	 */
-	public int getVisualMeta(IBlockAccess world, int x, int y, int z, EnumFacing side);
+	public int getVisualMeta(IBlockAccess world, BlockPos pos, EnumFacing side);
 
 	/**
 	 * This function returns whether the block's renderer will visually connect to other blocks implementing IBlockAppearance.

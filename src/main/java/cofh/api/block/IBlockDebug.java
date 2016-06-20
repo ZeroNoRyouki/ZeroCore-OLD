@@ -1,6 +1,7 @@
 package cofh.api.block;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 
@@ -17,17 +18,13 @@ public interface IBlockDebug {
 	 *
 	 * @param world
 	 *            Reference to the world.
-	 * @param x
-	 *            X coordinate of the block.
-	 * @param y
-	 *            Y coordinate of the block.
-	 * @param z
-	 *            Z coordinate of the block.
+	 * @param pos
+	 *            Coordinates of the block.
 	 * @param side
 	 *            The side of the block.
 	 * @param player
 	 *            Player doing the debugging.
 	 */
-	void debugBlock(IBlockAccess world, int x, int y, int z, EnumFacing facing, EntityPlayer player);
+	void debugBlock(IBlockAccess world, BlockPos pos, EnumFacing side, EntityPlayer player);
 
 }
