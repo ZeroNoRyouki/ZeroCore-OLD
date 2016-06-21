@@ -1,5 +1,6 @@
 package zero.mods.zerocore.lib.block;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -7,6 +8,9 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import zero.mods.zerocore.util.WorldHelper;
 
 /**
  * A base class for modded tile entities
@@ -15,7 +19,18 @@ import net.minecraft.tileentity.TileEntity;
  * https://github.com/CoFH/CoFHCore/blob/master/src/main/java/cofh/core/block/TileCoFHBase.java
  */
 public abstract class ModTileEntity extends TileEntity {
-    
+
+    public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+
+        BlockPos position = this.getPos();
+
+        if (worldObj.getTileEntity(position) != this)
+            return false;
+
+        return entityplayer.getDistanceSq((double)position.getX() + 0.5D, (double)position.getY() + 0.5D,
+                (double)position.getZ() + 0.5D) <= 64D;
+    }
+
     /*
     GUI management
      */
@@ -24,21 +39,9 @@ public abstract class ModTileEntity extends TileEntity {
      * Check if the tile entity has a GUI or not
      * Override in derived classes to return true if your tile entity got a GUI
      */
-    public boolean canOpenGui() {
+    public boolean canOpenGui(World world, BlockPos posistion, IBlockState state) {
 
         return false;
-    }
-
-    /**
-     * Open the default GUI of this tile entity
-     * Use along with ModGuiHandler
-     *
-     * @param player the player currently interacting with your block/tile entity
-     * @return true if the GUI was opened, false otherwise
-     */
-    public boolean openGui(Object mod, EntityPlayer player) {
-
-        return this.openGui(mod, player, -1);
     }
 
     /**
@@ -50,22 +53,18 @@ public abstract class ModTileEntity extends TileEntity {
      */
     public boolean openGui(Object mod, EntityPlayer player, int guiId) {
 
-        if (this.canOpenGui()) {
-
-            player.openGui(mod, guiId, this.worldObj, this.pos.getX(), this.pos.getY(), this.pos.getZ());
-            return true;
-        }
-
-        return false;
+        player.openGui(mod, guiId, this.worldObj, this.pos.getX(), this.pos.getY(), this.pos.getZ());
+        return true;
     }
 
     /**
      * Returns a Server side Container to be displayed to the user.
      *
-     * @param playerInventory The inventory of the player
+     * @param guiId the GUI ID mumber
+     * @param player the player currently interacting with your block/tile entity
      * @return A GuiScreen/Container to be displayed to the user, null if none.
      */
-    public Object getServerGuiElement(InventoryPlayer playerInventory) {
+    public Object getServerGuiElement(int guiId, EntityPlayer player) {
 
         return null;
     }
@@ -75,10 +74,11 @@ public abstract class ModTileEntity extends TileEntity {
      * needs to return a instance of GuiScreen On the server side, this needs to
      * return a instance of Container
      *
-     * @param playerInventory The inventory of the player
+     * @param guiId the GUI ID mumber
+     * @param player the player currently interacting with your block/tile entity
      * @return A GuiScreen/Container to be displayed to the user, null if none.
      */
-    public Object getClientGuiElement(InventoryPlayer playerInventory) {
+    public Object getClientGuiElement(int guiId, EntityPlayer player) {
 
         return null;
     }
@@ -135,7 +135,7 @@ public abstract class ModTileEntity extends TileEntity {
     public void onChunkUnload() {
 
         if (!tileEntityInvalid) {
-            invalidate(); // this isn't called when a tile unloads. guard incase it is in the future
+            this.invalidate(); // this isn't called when a tile unloads. guard incase it is in the future
         }
     }
 
@@ -153,5 +153,15 @@ public abstract class ModTileEntity extends TileEntity {
     public void callNeighborTileChange() {
 
         //this.worldObj.func_147453_f(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
+    }
+
+    public void notifyBlockUpdate() {
+
+        WorldHelper.notifyBlockUpdate(this.worldObj, this.getPos(), null, null);
+    }
+
+    public void notifyBlockUpdate(IBlockState oldState, IBlockState newState) {
+
+        WorldHelper.notifyBlockUpdate(this.worldObj, this.getPos(), oldState, newState);
     }
 }
