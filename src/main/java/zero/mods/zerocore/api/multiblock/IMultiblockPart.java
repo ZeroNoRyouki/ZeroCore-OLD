@@ -37,9 +37,9 @@ public interface IMultiblockPart {
 	 * Returns the location of this multiblock part in the world, in BlockPos form.
 	 * @return A BlockPos set to the location of this multiblock part in the world.
 	 */
-	BlockPos getPos();
+	BlockPos getWorldPosition();
 
-	boolean isInvalid();
+	boolean isPartInvalid();
 	
 	// Multiblock connection-logic callbacks
 	

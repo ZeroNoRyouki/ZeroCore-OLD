@@ -23,13 +23,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.FMLLog;
+import zero.mods.zerocore.lib.block.ModTileEntity;
 import zero.mods.zerocore.util.WorldHelper;
 
 /**
  * Base logic class for Multiblock-connected tile entities. Most multiblock machines
  * should derive from this and implement their game logic in certain abstract methods.
  */
-public abstract class MultiblockTileEntityBase extends TileEntity implements IMultiblockPart {
+public abstract class MultiblockTileEntityBase extends ModTileEntity implements IMultiblockPart {
 	private MultiblockControllerBase controller;
 	private boolean visited;
 	
@@ -96,21 +97,20 @@ public abstract class MultiblockTileEntityBase extends TileEntity implements IMu
 	}
 	
 	///// Overrides from base TileEntity methods
-	
+
+
 	@Override
-	public void readFromNBT(NBTTagCompound data) {
-		super.readFromNBT(data);
-		
+	protected void loadFromNBT(NBTTagCompound data) {
+
 		// We can't directly initialize a multiblock controller yet, so we cache the data here until
 		// we receive a validate() call, which creates the controller and hands off the cached data.
 		if(data.hasKey("multiblockData")) {
 			this.cachedMultiblockData = data.getCompoundTag("multiblockData");
 		}
 	}
-	
+
 	@Override
-	public void writeToNBT(NBTTagCompound data) {
-		super.writeToNBT(data);
+	protected void saveToNBT(NBTTagCompound data) {
 
 		if(isMultiblockSaveDelegate() && isConnected()) {
 			NBTTagCompound multiblockData = new NBTTagCompound();
@@ -309,9 +309,10 @@ public abstract class MultiblockTileEntityBase extends TileEntity implements IMu
 
 		TileEntity te;
 		List<IMultiblockPart> neighborParts = new ArrayList<IMultiblockPart>();
-		IChunkProvider chunkProvider = worldObj.getChunkProvider();
+		
 		for(BlockPos neighbor : neighbors) {
-			if(!WorldHelper.blockChunkExists(chunkProvider, neighbor)) {
+
+			if (!this.worldObj.isBlockLoaded(neighbor)) {
 				// Chunk not loaded, skip it.
 				continue;
 			}
@@ -331,6 +332,15 @@ public abstract class MultiblockTileEntityBase extends TileEntity implements IMu
 		worldObj.markChunkDirty(this.getPos(), this);
 	}
 
+	@Override
+	public BlockPos getWorldPosition() {
+		return this.pos;
+	}
+
+	@Override
+	public boolean isPartInvalid() {
+		return this.isInvalid();
+	}
 
 	//// Helper functions for notifying neighboring blocks
 	protected void notifyNeighborsOfBlockChange() {

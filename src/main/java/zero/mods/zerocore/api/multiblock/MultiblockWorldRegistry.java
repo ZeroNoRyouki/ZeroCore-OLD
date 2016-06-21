@@ -124,13 +124,13 @@ public class MultiblockWorldRegistry {
 				// Process orphaned blocks
 				// These are blocks that exist in a valid chunk and require a controller
 				for(IMultiblockPart orphan : orphansToProcess) {
-					coord = orphan.getPos();
+					coord = orphan.getWorldPosition();
 					if(!WorldHelper.blockChunkExists(chunkProvider, coord)) {
 						continue;
 					}
 
 					// This can occur on slow machines.
-					if(orphan.isInvalid()) { continue; }
+					if(orphan.isPartInvalid()) { continue; }
 
 					if(this.getMultiblockPartFromWorld(worldObj, coord) != orphan) {
 						// This block has been replaced by another.
@@ -282,7 +282,7 @@ public class MultiblockWorldRegistry {
 	 * @param part The part which is being added to this world.
 	 */
 	public void onPartAdded(IMultiblockPart part) {
-		BlockPos worldLocation = part.getPos();
+		BlockPos worldLocation = part.getWorldPosition();
 		
 		if(!WorldHelper.blockChunkExists(this.worldObj.getChunkProvider(), worldLocation)) {
 			// Part goes into the waiting-for-chunk-load list
@@ -313,7 +313,7 @@ public class MultiblockWorldRegistry {
 	 * @param part The part which is being removed.
 	 */
 	public void onPartRemovedFromWorld(IMultiblockPart part) {
-		BlockPos coord = part.getPos();
+		BlockPos coord = part.getWorldPosition();
 		if(coord != null) {
 			long hash = WorldHelper.getChunkXZHashFromBlock(coord);
 			

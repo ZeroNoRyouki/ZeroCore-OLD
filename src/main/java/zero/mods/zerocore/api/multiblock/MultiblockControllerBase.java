@@ -122,7 +122,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 */
 	public void attachBlock(IMultiblockPart part) {
 		IMultiblockPart candidate;
-		BlockPos coord = part.getPos();
+		BlockPos coord = part.getWorldPosition();
 
 		if(!connectedParts.add(part))
 			FMLLog.warning("[%s] Controller %s is double-adding part %d @ %s. This is unusual. If you encounter odd behavior, please tear down the machine and rebuild it.",
@@ -152,7 +152,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 			part.forfeitMultiblockSaveDelegate();
 		}
 
-		BlockPos partPos = part.getPos();
+		BlockPos partPos = part.getWorldPosition();
 		int curX, curY, curZ;
 		int newX, newY, newZ;
 		int partCoord;
@@ -245,7 +245,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 
 		minimumCoord = maximumCoord = null;
 		
-		if(referenceCoord != null && referenceCoord.equals(part.getPos())) {
+		if(referenceCoord != null && referenceCoord.equals(part.getWorldPosition())) {
 			referenceCoord = null;
 		}
 		
@@ -267,7 +267,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		// Strip out this part
 		onDetachBlock(part);
 		if(!connectedParts.remove(part)) {
-			BlockPos position = part.getPos();
+			BlockPos position = part.getWorldPosition();
 
 			FMLLog.warning("[%s] Double-removing part (%d) @ %d, %d, %d, this is unexpected and may cause problems. If you encounter anomalies, please tear down the reactor and rebuild it.",
 					this.worldObj.isRemote ? "CLIENT" : "SERVER", part.hashCode(), position.getX(), position.getY(), position.getZ());
@@ -444,7 +444,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		
 		for(IMultiblockPart acquiredPart : partsToAcquire) {
 			// By definition, none of these can be the minimum block.
-			if(acquiredPart.isInvalid()) { continue; }
+			if(acquiredPart.isPartInvalid()) { continue; }
 			
 			connectedParts.add(acquiredPart);
 			acquiredPart.onAssimilated(this);
@@ -627,7 +627,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 
 		for (IMultiblockPart part : this.connectedParts) {
 
-			partPos = part.getPos();
+			partPos = part.getWorldPosition();
 
 			partCoord = partPos.getX();
 			if (partCoord < minX) minX = partCoord;
@@ -733,7 +733,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 			if(!first) {
 				sb.append(", ");
 			}
-			partPos = part.getPos();
+			partPos = part.getWorldPosition();
 			sb.append(String.format("(%d: %d, %d, %d)", part.hashCode(), partPos.getX(), partPos.getY(), partPos.getZ()));
 			first = false;
 		}
@@ -747,7 +747,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	private void auditParts() {
 		HashSet<IMultiblockPart> deadParts = new HashSet<IMultiblockPart>();
 		for(IMultiblockPart part : connectedParts) {
-			if(part.isInvalid() || worldObj.getTileEntity(part.getPos()) != part) {
+			if(part.isPartInvalid() || worldObj.getTileEntity(part.getWorldPosition()) != part) {
 				onDetachBlock(part);
 				deadParts.add(part);
 			}
@@ -786,9 +786,9 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		int originalSize = connectedParts.size();
 
 		for(IMultiblockPart part : connectedParts) {
-			position = part.getPos();
+			position = part.getWorldPosition();
 			// This happens during chunk unload.
-			if (!WorldHelper.blockChunkExists(chunkProvider, position) || part.isInvalid()) {
+			if (!WorldHelper.blockChunkExists(chunkProvider, position) || part.isPartInvalid()) {
 				deadParts.add(part);
 				onDetachBlock(part);
 				continue;
@@ -891,7 +891,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		
 		IChunkProvider chunkProvider = worldObj.getChunkProvider();
 		for(IMultiblockPart part : connectedParts) {
-			if(WorldHelper.blockChunkExists(chunkProvider, part.getPos())) {
+			if(WorldHelper.blockChunkExists(chunkProvider, part.getWorldPosition())) {
 				onDetachBlock(part);
 			}
 		}
@@ -916,8 +916,8 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		referenceCoord = null;
 
 		for(IMultiblockPart part : connectedParts) {
-			position = part.getPos();
-			if(part.isInvalid() || !WorldHelper.blockChunkExists(chunkProvider, position)) {
+			position = part.getWorldPosition();
+			if(part.isPartInvalid() || !WorldHelper.blockChunkExists(chunkProvider, position)) {
 				// Chunk is unloading, skip this coord to prevent chunk thrashing
 				continue;
 			}
