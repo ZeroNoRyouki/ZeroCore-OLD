@@ -14,7 +14,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 
 import java.util.Random;
 
-public class WorldHelper {
+public final class WorldHelper {
 
     /**
      * Test if we were called by the Server thread or by another thread in a server environment
