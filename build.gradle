@@ -25,7 +25,7 @@ group= "zero.mods.zerocore" // http://maven.apache.org/guides/mini/guide-naming-
 archivesBaseName = "zerocore"
 
 minecraft {
-    version = "1.9-12.16.1.1887"
+    version = "1.9-12.16.1.1934"
 	
 	if (file('../run').exists()) {
 		runDir = "../run"
