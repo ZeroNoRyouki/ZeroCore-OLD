@@ -3,6 +3,8 @@ package zero.mods.zerocore.lib;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+
 import java.util.HashMap;
 
 /**
@@ -139,6 +141,41 @@ public final class BlockFacings {
         return PropertyBlockFacings.None;
     }
 
+    /**
+     * Offset the given BlockPos in all direction set in this object
+     *
+     * @param originalPosition the original position
+     * @return the new position
+     */
+    public BlockPos offsetBlockPos(BlockPos originalPosition) {
+
+        int x = 0, y = 0, z = 0;
+
+        for (EnumFacing facing: EnumFacing.VALUES)
+            if (this.isSet(facing)) {
+
+                x += facing.getFrontOffsetX();
+                y += facing.getFrontOffsetY();
+                z += facing.getFrontOffsetZ();
+            }
+
+        return originalPosition.add(x, y, z);
+    }
+
+    /**
+     * Return the first face that is in the required state
+     *
+     * @param isSet specify if you are looking for "set" faces (true) or not (false)
+     * @return the first face that match the required state or null if no face is found
+     */
+    public EnumFacing firstIf(boolean isSet) {
+
+        for (EnumFacing facing: EnumFacing.VALUES)
+            if (isSet == this.isSet(facing))
+                return facing;
+
+        return null;
+    }
 
     /**
      * Return a BlockFacing object that describe the passed in state
