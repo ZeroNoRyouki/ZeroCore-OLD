@@ -202,6 +202,18 @@ public final class BlockFacings {
         return BlockFacings.from(BlockFacings.computeHash(facings));
     }
 
+    @Override
+    public String toString() {
+
+        return String.format("Facings: %s%s%s%s%s%s",
+                this.isSet(EnumFacing.DOWN)  ? "DOWN "  : "",
+                this.isSet(EnumFacing.UP)    ? "UP "    : "",
+                this.isSet(EnumFacing.NORTH) ? "NORTH " : "",
+                this.isSet(EnumFacing.SOUTH) ? "SOUTH " : "",
+                this.isSet(EnumFacing.WEST)  ? "WEST "  : "",
+                this.isSet(EnumFacing.EAST)  ? "EAST "  : "");
+    }
+
     static BlockFacings from(Byte hash) {
 
         BlockFacings facings = BlockFacings.s_cache.get(hash);
