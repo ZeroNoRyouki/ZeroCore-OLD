@@ -24,7 +24,7 @@ public final class OreDictionaryHelper {
         return names;
     }
 
-    public ItemStack getOre(String name) {
+    public static ItemStack getOre(String name) {
 
         return !OreDictionaryHelper.doesOreNameExist(name) ? null :
                 OreDictionaryHelper.duplicateStack(OreDictionary.getOres(name).get(0), 1);
