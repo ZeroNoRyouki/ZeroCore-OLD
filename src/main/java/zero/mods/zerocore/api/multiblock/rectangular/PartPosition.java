@@ -11,49 +11,44 @@ package zero.mods.zerocore.api.multiblock.rectangular;
  */
 
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 
-public enum PartPosition  implements IStringSerializable {
-	Unknown,
-	Interior,
-	FrameCorner,
-	FrameEastWest,
-	FrameSouthNorth,
-	FrameUpDown,
-	TopFace,
-	BottomFace,
-	NorthFace,
-	SouthFace,
-	EastFace,
-	WestFace;
+public enum PartPosition implements IStringSerializable {
+	Unknown(null, Type.Unknown),
+	Interior(null, Type.Unknown),
+	FrameCorner(null, Type.Frame),
+	FrameEastWest(null, Type.Frame),
+	FrameSouthNorth(null, Type.Frame),
+	FrameUpDown(null, Type.Frame),
+	TopFace(EnumFacing.UP, Type.Face),
+	BottomFace(EnumFacing.DOWN, Type.Face),
+	NorthFace(EnumFacing.NORTH, Type.Face),
+	SouthFace(EnumFacing.SOUTH, Type.Face),
+	EastFace(EnumFacing.EAST, Type.Face),
+	WestFace(EnumFacing.WEST, Type.Face);
+
+	public enum Type {
+		Unknown,
+		Interior,
+		Frame,
+		Face
+	}
 	
 	public boolean isFace() {
-
-		switch(this) {
-
-			case TopFace:
-			case BottomFace:
-			case NorthFace:
-			case SouthFace:
-			case EastFace:
-			case WestFace:
-				return true;
-			default:
-				return false;
-		}
+		return this._type == Type.Face;
 	}
 
 	public boolean isFrame() {
+		return this._type == Type.Frame;
+	}
 
-		switch (this) {
+	public EnumFacing getFacing() {
+		return this._facing;
+	}
 
-			case FrameEastWest:
-			case FrameSouthNorth:
-			case FrameUpDown:
-				return true;
-			default:
-				return false;
-		}
+	public Type getType() {
+		return this._type;
 	}
 
 	public static PropertyEnum createProperty(String name) {
@@ -66,4 +61,13 @@ public enum PartPosition  implements IStringSerializable {
 
 		return this.toString();
 	}
+
+	PartPosition(EnumFacing facing, Type type) {
+
+		this._facing = facing;
+		this._type = type;
+	}
+
+	private EnumFacing _facing;
+	private Type _type;
 }
