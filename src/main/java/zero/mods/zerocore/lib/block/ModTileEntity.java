@@ -10,6 +10,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import zero.mods.zerocore.lib.network.ModTileEntityMessage;
 import zero.mods.zerocore.util.WorldHelper;
 
 /**
@@ -40,7 +41,6 @@ public abstract class ModTileEntity extends TileEntity {
      * Override in derived classes to return true if your tile entity got a GUI
      */
     public boolean canOpenGui(World world, BlockPos posistion, IBlockState state) {
-
         return false;
     }
 
@@ -65,7 +65,6 @@ public abstract class ModTileEntity extends TileEntity {
      * @return A GuiScreen/Container to be displayed to the user, null if none.
      */
     public Object getServerGuiElement(int guiId, EntityPlayer player) {
-
         return null;
     }
 
@@ -79,7 +78,6 @@ public abstract class ModTileEntity extends TileEntity {
      * @return A GuiScreen/Container to be displayed to the user, null if none.
      */
     public Object getClientGuiElement(int guiId, EntityPlayer player) {
-
         return null;
     }
 
@@ -88,41 +86,50 @@ public abstract class ModTileEntity extends TileEntity {
      */
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public final void readFromNBT(NBTTagCompound nbt) {
 
         super.readFromNBT(nbt);
-        this.loadFromNBT(nbt);
+        this.loadFromNBT(nbt, false);
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt) {
+    public final void writeToNBT(NBTTagCompound nbt) {
 
         super.writeToNBT(nbt);
-        this.saveToNBT(nbt);
+        this.saveToNBT(nbt, false);
     }
 
     @Override
-    public Packet<?> getDescriptionPacket() {
+    public final Packet<?> getDescriptionPacket() {
 
         NBTTagCompound nbt = new NBTTagCompound();
 
-        this.saveToNBT(nbt);
+        this.saveToNBT(nbt, true);
 
         return new SPacketUpdateTileEntity(this.pos, 0, nbt);
     }
 
+    /**
+     * Called when you receive a TileEntityData packet for the location this
+     * TileEntity is currently in. On the client, the NetworkManager will always
+     * be the remote server. On the server, it will be whomever is responsible for
+     * sending the packet.
+     *
+     * @param net The NetworkManager the packet originated from
+     * @param packet The data packet
+     */
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    public final void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 
         super.onDataPacket(net, packet);
 
         NBTTagCompound nbt = packet.getNbtCompound();
 
         if (null != nbt)
-            this.loadFromNBT(nbt);
+            this.loadFromNBT(nbt, true);
     }
 
-    protected abstract void loadFromNBT(NBTTagCompound nbt);
+    protected abstract void loadFromNBT(NBTTagCompound nbt, boolean fromPacket);
 
     protected abstract void saveToNBT(NBTTagCompound nbt);
 
@@ -134,9 +141,8 @@ public abstract class ModTileEntity extends TileEntity {
     @Override
     public void onChunkUnload() {
 
-        if (!tileEntityInvalid) {
-            this.invalidate(); // this isn't called when a tile unloads. guard incase it is in the future
-        }
+        if (!tileEntityInvalid)
+            this.invalidate();
     }
 
     public void markChunkDirty() {
@@ -163,5 +169,11 @@ public abstract class ModTileEntity extends TileEntity {
     public void notifyBlockUpdate(IBlockState oldState, IBlockState newState) {
 
         WorldHelper.notifyBlockUpdate(this.worldObj, this.getPos(), oldState, newState);
+    }
+
+    public void nofityTileEntityUpdate() {
+
+        this.markDirty();
+        WorldHelper.notifyBlockUpdate(this.worldObj, this.getPos(), null, null);
     }
 }
