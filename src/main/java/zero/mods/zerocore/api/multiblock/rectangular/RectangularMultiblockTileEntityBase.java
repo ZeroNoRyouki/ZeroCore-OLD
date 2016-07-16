@@ -10,11 +10,14 @@ package zero.mods.zerocore.api.multiblock.rectangular;
  * https://github.com/ZeroNoRyouki/ZeroCore
  */
 
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import zero.mods.zerocore.lib.BlockFacings;
 import zero.mods.zerocore.api.multiblock.MultiblockControllerBase;
 import zero.mods.zerocore.api.multiblock.MultiblockTileEntityBase;
+
+import javax.annotation.Nullable;
 
 public abstract class RectangularMultiblockTileEntityBase extends
 		MultiblockTileEntityBase {
@@ -49,6 +52,54 @@ public abstract class RectangularMultiblockTileEntityBase extends
 
 		return position;
 	}
+
+	/**
+	 * Return the single direction this part is facing if the part is in one side of the multiblock
+	 *
+	 * @return the direction toward with the part is facing or null if the part is not in one side of the multiblock
+	 */
+	@Nullable
+	public EnumFacing getOutwardFacing() {
+
+		EnumFacing facing = null != this.position ? this.position.getFacing() : null;
+
+		if (null == facing) {
+
+			BlockFacings out = this.getOutwardsDir();
+
+			if (!out.none() && 1 == out.countFacesIf(true))
+				facing = out.firstIf(true);
+		}
+
+		return facing;
+	}
+
+	/**
+	 * Return the single direction this part is facing based on it's position in the multiblock
+	 *
+	 * @return the direction toward with the part is facing or null if the part is not in one side of the multiblock
+	 */
+	@Nullable
+	public EnumFacing getOutwardFacingFromWorldPosition() {
+
+		BlockFacings facings = null;
+		MultiblockControllerBase controller = this.getMultiblockController();
+
+		if (null != controller) {
+
+			BlockPos position = this.getWorldPosition();
+			BlockPos min = controller.getMinimumCoord();
+			BlockPos max = controller.getMaximumCoord();
+			int x = position.getX(), y = position.getY(), z = position.getZ();
+
+			facings = BlockFacings.from(min.getY() == y, max.getY() == y,
+										min.getZ() == z, max.getZ() == z,
+										min.getX() == x, max.getX() == x);
+		}
+
+		return null != facings && !facings.none() && 1 == facings.countFacesIf(true) ? facings.firstIf(true) : null;
+	}
+
 
 	// Handlers from MultiblockTileEntityBase
 
