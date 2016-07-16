@@ -20,6 +20,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.FMLLog;
@@ -100,22 +101,50 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 
 
 	@Override
-	protected void loadFromNBT(NBTTagCompound data) {
+	protected void loadFromNBT(NBTTagCompound data, boolean fromPacket) {
 
-		// We can't directly initialize a multiblock controller yet, so we cache the data here until
-		// we receive a validate() call, which creates the controller and hands off the cached data.
-		if(data.hasKey("multiblockData")) {
-			this.cachedMultiblockData = data.getCompoundTag("multiblockData");
+		if (!fromPacket) {
+
+			// We can't directly initialize a multiblock controller yet, so we cache the data here until
+			// we receive a validate() call, which creates the controller and hands off the cached data.
+			if (data.hasKey("multiblockData")) {
+				this.cachedMultiblockData = data.getCompoundTag("multiblockData");
+			}
+
+		} else {
+
+			if(data.hasKey("multiblockData")) {
+				NBTTagCompound tag = data.getCompoundTag("multiblockData");
+				if(isConnected()) {
+					getMultiblockController().loadFromNBT(tag, fromPacket);
+				}
+				else {
+					// This part hasn't been added to a machine yet, so cache the data.
+					this.cachedMultiblockData = tag;
+				}
+			}
 		}
 	}
 
 	@Override
-	protected void saveToNBT(NBTTagCompound data) {
+	protected void saveToNBT(NBTTagCompound data, boolean toPacket) {
 
-		if(isMultiblockSaveDelegate() && isConnected()) {
-			NBTTagCompound multiblockData = new NBTTagCompound();
-			this.controller.writeToNBT(multiblockData);
-			data.setTag("multiblockData", multiblockData);
+		if (!toPacket) {
+
+			if (isMultiblockSaveDelegate() && isConnected()) {
+				NBTTagCompound multiblockData = new NBTTagCompound();
+				this.controller.saveToNBT(multiblockData, toPacket);
+				data.setTag("multiblockData", multiblockData);
+			}
+
+		} else {
+
+			if (this.isMultiblockSaveDelegate() && isConnected()) {
+				NBTTagCompound tag = new NBTTagCompound();
+				getMultiblockController().saveToNBT(tag, toPacket);
+				data.setTag("multiblockData", tag);
+			}
+
 		}
 	}
 
@@ -158,6 +187,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 		MultiblockRegistry.onPartAdded(this.worldObj, this);
 	}
 
+	/*
 	// Network Communication
 	@Override
 	public Packet getDescriptionPacket() {
@@ -169,7 +199,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	@Override
 	public void onDataPacket(NetworkManager network, SPacketUpdateTileEntity packet) {
 		this.decodeDescriptionPacket(packet.getNbtCompound());
-	}
+	}*/
 	
 	///// Things to override in most implementations (IMultiblockPart)
 	/**
@@ -178,21 +208,21 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	 * Decode this data in decodeDescriptionPacket.
 	 * @param packetData An NBT compound tag into which you should write your custom description data.
 	 * @see zero.mods.zerocore.api.multiblock.MultiblockTileEntityBase#decodeDescriptionPacket(NBTTagCompound)
-	 */
+	 *//*
 	protected void encodeDescriptionPacket(NBTTagCompound packetData) {
 		if(this.isMultiblockSaveDelegate() && isConnected()) {
 			NBTTagCompound tag = new NBTTagCompound();
 			getMultiblockController().formatDescriptionPacket(tag);
 			packetData.setTag("multiblockData", tag);
 		}
-	}
+	}*/
 	
 	/**
 	 * Override this to easily read in data from a TileEntity's description packet.
 	 * Encoded in encodeDescriptionPacket.
 	 * @param packetData The NBT data from the tile entity's description packet.
 	 * @see zero.mods.zerocore.api.multiblock.MultiblockTileEntityBase#encodeDescriptionPacket(NBTTagCompound)
-	 */
+	 *//*
 	protected void decodeDescriptionPacket(NBTTagCompound packetData) {
 		if(packetData.hasKey("multiblockData")) {
 			NBTTagCompound tag = packetData.getCompoundTag("multiblockData");
@@ -204,7 +234,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 				this.cachedMultiblockData = tag;
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public boolean hasMultiblockSaveData() {
@@ -296,7 +326,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	
 	@Override
 	public IMultiblockPart[] getNeighboringParts() {
-
+		/*
 		BlockPos myPosition = this.getPos();
 		BlockPos[] neighbors = new BlockPos[] {
 				myPosition.west(),
@@ -306,10 +336,10 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 				myPosition.up(),
 				myPosition.east()
 		};
-
+		*/
 		TileEntity te;
 		List<IMultiblockPart> neighborParts = new ArrayList<IMultiblockPart>();
-		
+		/*
 		for(BlockPos neighbor : neighbors) {
 
 			if (!this.worldObj.isBlockLoaded(neighbor)) {
@@ -324,6 +354,21 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 		}
 		IMultiblockPart[] tmp = new IMultiblockPart[neighborParts.size()];
 		return neighborParts.toArray(tmp);
+			*/
+		//////
+
+		BlockPos neighborPosition, partPosition = this.getWorldPosition();
+
+		for (EnumFacing facing : EnumFacing.VALUES) {
+
+			neighborPosition = partPosition.offset(facing);
+			te = this.worldObj.getTileEntity(neighborPosition);
+
+			if (te instanceof IMultiblockPart)
+				neighborParts.add((IMultiblockPart)te);
+		}
+
+		return neighborParts.toArray(new IMultiblockPart[neighborParts.size()]);
 	}
 	
 	@Override
