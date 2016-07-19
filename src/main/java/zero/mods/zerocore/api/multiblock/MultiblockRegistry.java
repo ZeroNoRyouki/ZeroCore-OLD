@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Set;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLLog;
+import zero.mods.zerocore.internal.ZeroCore;
 
 /**
  * This is a very static singleton registry class which directs incoming events to sub-objects, which
@@ -21,6 +22,14 @@ import net.minecraftforge.fml.common.FMLLog;
  * @author Erogenous Beef
  */
 public class MultiblockRegistry {
+
+	/**
+	 * Call to initialize the event handlers needed for the multiblock registry to work correctly
+	 */
+	public static void initRegistry() {
+		ZeroCore.getProxy().initMultiblockRegistry();
+	}
+
 	// World > WorldRegistry map
 	private static HashMap<World, MultiblockWorldRegistry> registries = new HashMap<World, MultiblockWorldRegistry>();
 	

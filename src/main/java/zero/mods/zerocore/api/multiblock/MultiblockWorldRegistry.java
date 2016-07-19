@@ -20,7 +20,7 @@ import java.util.Set;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.FMLLog;
@@ -370,7 +370,7 @@ public class MultiblockWorldRegistry {
 	 * @param chunkZ Chunk Z coordinate (world coordate >> 4) of the chunk that was loaded
 	 */
 	public void onChunkLoaded(int chunkX, int chunkZ) {
-		long chunkHash = ChunkCoordIntPair.chunkXZ2Int(chunkX, chunkZ);
+		long chunkHash = ChunkPos.chunkXZ2Int(chunkX, chunkZ);
 		if(partsAwaitingChunkLoad.containsKey(chunkHash)) {
 			synchronized(partsAwaitingChunkLoadMutex) {
 				if(partsAwaitingChunkLoad.containsKey(chunkHash)) {

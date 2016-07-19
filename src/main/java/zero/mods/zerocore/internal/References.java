@@ -7,8 +7,8 @@ public final class References {
     public static final String MOD_MCVERSION = "1.9.0";
     public static final String MOD_DEPENDENCIES = "";
 
-    public static final String PROXY_COMMON = "";
-    public static final String PROXY_CLIENT = "";
+    public static final String PROXY_COMMON = "zero.mods.zerocore.internal.common.CommonProxy";
+    public static final String PROXY_CLIENT = "zero.mods.zerocore.internal.client.ClientProxy";
 
 
     private References() {

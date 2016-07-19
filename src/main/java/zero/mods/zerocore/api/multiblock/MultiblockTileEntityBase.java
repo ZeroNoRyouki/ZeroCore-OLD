@@ -16,16 +16,11 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.FMLLog;
 import zero.mods.zerocore.lib.block.ModTileEntity;
-import zero.mods.zerocore.util.WorldHelper;
 
 /**
  * Base logic class for Multiblock-connected tile entities. Most multiblock machines
@@ -96,14 +91,13 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 			this.controller = null;
 		}
 	}
-	
-	///// Overrides from base TileEntity methods
+
 
 
 	@Override
-	protected void loadFromNBT(NBTTagCompound data, boolean fromPacket) {
+	protected void syncDataFrom(NBTTagCompound data, SyncReason syncReason) {
 
-		if (!fromPacket) {
+		if (SyncReason.FullSync == syncReason) {
 
 			// We can't directly initialize a multiblock controller yet, so we cache the data here until
 			// we receive a validate() call, which creates the controller and hands off the cached data.
@@ -116,7 +110,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 			if(data.hasKey("multiblockData")) {
 				NBTTagCompound tag = data.getCompoundTag("multiblockData");
 				if(isConnected()) {
-					getMultiblockController().loadFromNBT(tag, fromPacket);
+					getMultiblockController().syncDataFromServer(tag, syncReason);
 				}
 				else {
 					// This part hasn't been added to a machine yet, so cache the data.
@@ -127,13 +121,13 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	}
 
 	@Override
-	protected void saveToNBT(NBTTagCompound data, boolean toPacket) {
+	protected void syncDataTo(NBTTagCompound data, SyncReason syncReason) {
 
-		if (!toPacket) {
+		if (SyncReason.FullSync == syncReason) {
 
 			if (isMultiblockSaveDelegate() && isConnected()) {
 				NBTTagCompound multiblockData = new NBTTagCompound();
-				this.controller.saveToNBT(multiblockData, toPacket);
+				this.controller.syncDataToClient(multiblockData, syncReason);
 				data.setTag("multiblockData", multiblockData);
 			}
 
@@ -141,7 +135,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 
 			if (this.isMultiblockSaveDelegate() && isConnected()) {
 				NBTTagCompound tag = new NBTTagCompound();
-				getMultiblockController().saveToNBT(tag, toPacket);
+				getMultiblockController().syncDataToClient(tag, syncReason);
 				data.setTag("multiblockData", tag);
 			}
 

@@ -6,12 +6,11 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.IChunkProvider;
-
 import java.util.Random;
 
 public final class WorldHelper {
@@ -22,7 +21,6 @@ public final class WorldHelper {
      * @param world A valid world instance
      */
     public static boolean calledByLogicalServer(World world) {
-
         return !world.isRemote;
     }
 
@@ -32,20 +30,16 @@ public final class WorldHelper {
      * @param world A valid world instance
      */
     public static boolean calledByLogicalClient(World world) {
-
         return world.isRemote;
     }
 
     public static boolean isEntityInRange(Entity entity, double x, double y, double z, double range) {
-
         return entity.getDistanceSq(x + 0.5, y + 0.5, z + 0.5) < (range * range);
     }
 
     public static boolean isEntityInRange(Entity entity, BlockPos position, double range) {
-
         return entity.getDistanceSq(position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5) < (range * range);
     }
-
 
     public static void spawnVanillaParticles(World world, EnumParticleTypes particle, int minCount, int maxCount,
                                              int x, int y, int z, int offsetX, int offsetY, int offsetZ) {
@@ -76,7 +70,7 @@ public final class WorldHelper {
             pY = MathHelper.getRandomDoubleInRange(rand, py1, py2);
             pZ = MathHelper.getRandomDoubleInRange(rand, pz1, pz2);
 
-            ws.spawnParticle(particle, pX, pY, pZ, howMany, motionX, motionY, motionZ, rand.nextGaussian() * 0.02D, EMPTY_INT_ARRAY);
+            ws.spawnParticle(particle, pX, pY, pZ, howMany, motionX, motionY, motionZ, rand.nextGaussian() * 0.02D);
 
         } else
             for (int i = 0; i < howMany; ++i) {
@@ -89,7 +83,7 @@ public final class WorldHelper {
                 pY = MathHelper.getRandomDoubleInRange(rand, py1, py2);
                 pZ = MathHelper.getRandomDoubleInRange(rand, pz1, pz2);
 
-                world.spawnParticle(particle, pX, pY, pZ, motionX, motionY, motionZ, EMPTY_INT_ARRAY);
+                world.spawnParticle(particle, pX, pY, pZ, motionX, motionY, motionZ);
             }
     }
 
@@ -138,38 +132,31 @@ public final class WorldHelper {
      */
 
     public static int getChunkXFromBlock(int blockX) {
-
         return blockX >> 4;
     }
 
     public static int getChunkXFromBlock(BlockPos position) {
-
         return position.getX() >> 4;
     }
 
     public static int getChunkZFromBlock(int blockZ) {
-
         return blockZ >> 4;
     }
 
     public static int getChunkZFromBlock(BlockPos position) {
-
         return position.getZ() >> 4;
     }
 
     public static long getChunkXZHashFromBlock(int blockX, int blockZ) {
-
-        return ChunkCoordIntPair.chunkXZ2Int(WorldHelper.getChunkXFromBlock(blockX), WorldHelper.getChunkZFromBlock(blockZ));
+        return ChunkPos.chunkXZ2Int(WorldHelper.getChunkXFromBlock(blockX), WorldHelper.getChunkZFromBlock(blockZ));
     }
 
     public static long getChunkXZHashFromBlock(BlockPos position) {
-
-        return ChunkCoordIntPair.chunkXZ2Int(WorldHelper.getChunkXFromBlock(position), WorldHelper.getChunkZFromBlock(position));
+        return ChunkPos.chunkXZ2Int(WorldHelper.getChunkXFromBlock(position), WorldHelper.getChunkZFromBlock(position));
     }
 
     @Deprecated // use World.isBlockLoaded instead
     public static boolean blockChunkExists(IChunkProvider chunkProvider, BlockPos position) {
-
         return null != chunkProvider.getLoadedChunk(WorldHelper.getChunkXFromBlock(position), WorldHelper.getChunkZFromBlock(position));
     }
 
@@ -193,6 +180,4 @@ public final class WorldHelper {
 
     private WorldHelper() {
     }
-
-    public static final int[] EMPTY_INT_ARRAY = new int[0];
 }

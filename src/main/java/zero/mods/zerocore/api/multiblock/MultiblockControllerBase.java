@@ -24,6 +24,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.FMLLog;
 import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import zero.mods.zerocore.api.multiblock.validation.ValidationError;
+import zero.mods.zerocore.lib.block.ModTileEntity;
 import zero.mods.zerocore.util.WorldHelper;
 
 
@@ -608,14 +609,14 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 * @return The number of blocks connected to this controller.
 	 */
 	public int getNumConnectedBlocks() { return connectedParts.size(); }
+
 	/*
-	public abstract void writeToNBT(NBTTagCompound data);
-	public abstract void readFromNBT(NBTTagCompound data);
-	*/
-	protected abstract void loadFromNBT(NBTTagCompound nbt, boolean fromPacket);
-	protected abstract void saveToNBT(NBTTagCompound nbt, boolean toPacket);
+	 * Data synchronization
+	 */
 
+	protected abstract void syncDataFromServer(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
 
+	protected abstract void syncDataToClient(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
 
 	/**
 	 * Force this multiblock to recalculate its minimum and maximum coordinates

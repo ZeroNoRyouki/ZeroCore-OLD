@@ -2,16 +2,15 @@ package zero.mods.zerocore.lib.block;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import zero.mods.zerocore.lib.network.ModTileEntityMessage;
 import zero.mods.zerocore.util.WorldHelper;
+
+import javax.annotation.Nullable;
 
 /**
  * A base class for modded tile entities
@@ -82,57 +81,72 @@ public abstract class ModTileEntity extends TileEntity {
     }
 
     /*
-    Updated packed handling
+    TileEntity synchronization
      */
 
-    @Override
-    public final void readFromNBT(NBTTagCompound nbt) {
-
-        super.readFromNBT(nbt);
-        this.loadFromNBT(nbt, false);
+    public enum SyncReason {
+        FullSync,       // full sync from storage
+        NetworkUpdate   // update from the other side
     }
 
     @Override
-    public final void writeToNBT(NBTTagCompound nbt) {
+    public void readFromNBT(NBTTagCompound data) {
 
-        super.writeToNBT(nbt);
-        this.saveToNBT(nbt, false);
+        super.readFromNBT(data);
+        this.syncDataFrom(data, SyncReason.FullSync);
     }
 
     @Override
-    public final Packet<?> getDescriptionPacket() {
+    public NBTTagCompound writeToNBT(NBTTagCompound data) {
 
-        NBTTagCompound nbt = new NBTTagCompound();
+        this.syncDataTo(super.writeToNBT(data), SyncReason.FullSync);
+        return data;
+    }
 
-        this.saveToNBT(nbt, true);
+    @Override
+    public void handleUpdateTag(NBTTagCompound data) {
 
-        return new SPacketUpdateTileEntity(this.pos, 0, nbt);
+        super.readFromNBT(data);
+        this.syncDataFrom(data, SyncReason.NetworkUpdate);
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag() {
+
+        NBTTagCompound data = super.getUpdateTag();
+
+        this.syncDataTo(data, SyncReason.NetworkUpdate);
+        return data;
+    }
+
+    @Override
+    public final void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        this.syncDataFrom(packet.getNbtCompound(), SyncReason.NetworkUpdate);
+    }
+
+    @Nullable
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+
+        NBTTagCompound data = new NBTTagCompound();
+
+        this.syncDataTo(data, SyncReason.NetworkUpdate);
+        return new SPacketUpdateTileEntity(this.getPos(), 0, data);
     }
 
     /**
-     * Called when you receive a TileEntityData packet for the location this
-     * TileEntity is currently in. On the client, the NetworkManager will always
-     * be the remote server. On the server, it will be whomever is responsible for
-     * sending the packet.
-     *
-     * @param net The NetworkManager the packet originated from
-     * @param packet The data packet
+     * Sync tile entity data from the given NBT compound
+     * @param data the data
+     * @param syncReason the reason why the synchronization is necessary
      */
-    @Override
-    public final void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+    protected abstract void syncDataFrom(NBTTagCompound data, SyncReason syncReason);
 
-        super.onDataPacket(net, packet);
-
-        NBTTagCompound nbt = packet.getNbtCompound();
-
-        if (null != nbt)
-            this.loadFromNBT(nbt, true);
-    }
-
-    protected abstract void loadFromNBT(NBTTagCompound nbt, boolean fromPacket);
-
-    protected abstract void saveToNBT(NBTTagCompound nbt);
-
+    /**
+     * Sync tile entity data to the given NBT compound
+     * @param data the data
+     * @param syncReason the reason why the synchronization is necessary
+     */
+    protected abstract void syncDataTo(NBTTagCompound data, SyncReason syncReason);
 
     /*
      Chunk and block updates
