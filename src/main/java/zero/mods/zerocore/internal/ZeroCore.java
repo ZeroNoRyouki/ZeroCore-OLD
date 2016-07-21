@@ -6,7 +6,7 @@ import zero.mods.zerocore.internal.common.CommonProxy;
 
 @Mod(modid = References.MOD_ID, acceptedMinecraftVersions = References.MOD_MCVERSION,
         dependencies = References.MOD_DEPENDENCIES, version = References.MOD_VERSION)
-public class ZeroCore {
+public final class ZeroCore {
 
     public static CommonProxy getProxy() {
         return s_proxy;

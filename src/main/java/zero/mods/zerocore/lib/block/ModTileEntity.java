@@ -172,7 +172,7 @@ public abstract class ModTileEntity extends TileEntity {
     @Deprecated // not implemented
     public void callNeighborTileChange() {
 
-        //this.worldObj.func_147453_f(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
+        //this.WORLD.func_147453_f(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
     }
 
     public void notifyBlockUpdate() {
