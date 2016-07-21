@@ -24,6 +24,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.FMLLog;
 import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import zero.mods.zerocore.api.multiblock.validation.ValidationError;
+import zero.mods.zerocore.internal.ZeroCore;
 import zero.mods.zerocore.lib.block.ModTileEntity;
 import zero.mods.zerocore.util.WorldHelper;
 
@@ -38,7 +39,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	public static final short DIMENSION_UNBOUNDED = -1;
 
 	// Multiblock stuff - do not mess with
-	protected World worldObj;
+	public final World WORLD;
 	
 	// Disassembled -> Assembled; Assembled -> Disassembled OR Paused; Paused -> Assembled
 	protected enum AssemblyState { Disassembled, Assembled, Paused }
@@ -80,7 +81,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	
 	protected MultiblockControllerBase(World world) {
 		// Multiblock stuff
-		worldObj = world;
+		WORLD = world;
 		connectedParts  = new HashSet<IMultiblockPart>();
 
 		referenceCoord = null;
@@ -127,7 +128,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 
 		if(!connectedParts.add(part))
 			FMLLog.warning("[%s] Controller %s is double-adding part %d @ %s. This is unusual. If you encounter odd behavior, please tear down the machine and rebuild it.",
-					(worldObj.isRemote ? "CLIENT" : "SERVER"), hashCode(), part.hashCode(), coord);
+					(WORLD.isRemote ? "CLIENT" : "SERVER"), hashCode(), part.hashCode(), coord);
 
 		part.onAttached(this);
 		this.onBlockAdded(part);
@@ -143,7 +144,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 			part.becomeMultiblockSaveDelegate();
 		}
 		else if(coord.compareTo(referenceCoord) < 0) {
-			TileEntity te = this.worldObj.getTileEntity(referenceCoord);
+			TileEntity te = this.WORLD.getTileEntity(referenceCoord);
 			((IMultiblockPart)te).forfeitMultiblockSaveDelegate();
 			
 			referenceCoord = coord;
@@ -195,8 +196,8 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 			if ((newX != curX) || (newY != curY) || (newZ != curZ))
 				this.maximumCoord = new BlockPos(newX, newY, newZ);
 		}
-		
-		MultiblockRegistry.addDirtyController(worldObj, this);
+
+        REGISTRY.addDirtyController(WORLD, this);
 	}
 
 	/**
@@ -271,16 +272,16 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 			BlockPos position = part.getWorldPosition();
 
 			FMLLog.warning("[%s] Double-removing part (%d) @ %d, %d, %d, this is unexpected and may cause problems. If you encounter anomalies, please tear down the reactor and rebuild it.",
-					this.worldObj.isRemote ? "CLIENT" : "SERVER", part.hashCode(), position.getX(), position.getY(), position.getZ());
+					this.WORLD.isRemote ? "CLIENT" : "SERVER", part.hashCode(), position.getX(), position.getY(), position.getZ());
 		}
 
 		if(connectedParts.isEmpty()) {
 			// Destroy/unregister
-			MultiblockRegistry.addDeadController(this.worldObj, this);
+            REGISTRY.addDeadController(this.WORLD, this);
 			return;
 		}
 
-		MultiblockRegistry.addDirtyController(this.worldObj,  this);
+        REGISTRY.addDirtyController(this.WORLD,  this);
 
 		// Find new save delegate if we need to.
 		if(referenceCoord == null) {
@@ -463,8 +464,8 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 */
 	private void _onAssimilated(MultiblockControllerBase otherController) {
 		if(referenceCoord != null) {
-			if(WorldHelper.blockChunkExists(worldObj.getChunkProvider(), referenceCoord)) {
-				TileEntity te = this.worldObj.getTileEntity(this.referenceCoord);
+			if(WorldHelper.blockChunkExists(WORLD.getChunkProvider(), referenceCoord)) {
+				TileEntity te = this.WORLD.getTileEntity(this.referenceCoord);
 				if(te instanceof IMultiblockPart) {
 					((IMultiblockPart)te).forfeitMultiblockSaveDelegate();
 				}
@@ -500,7 +501,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	public final void updateMultiblockEntity() {
 		if(connectedParts.isEmpty()) {
 			// This shouldn't happen, but just in case...
-			MultiblockRegistry.addDeadController(this.worldObj, this);
+            REGISTRY.addDeadController(this.WORLD, this);
 			return;
 		}
 
@@ -509,14 +510,14 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 			return;
 		}
 
-		if(worldObj.isRemote) {
+		if(WORLD.isRemote) {
 			updateClient();
 		}
 		else if(updateServer()) {
 			// If this returns true, the server has changed its internal data. 
 			// If our chunks are loaded (they should be), we must mark our chunks as dirty.
 			if(minimumCoord != null && maximumCoord != null &&
-				this.worldObj.isAreaLoaded(this.minimumCoord, this.maximumCoord)) {
+				this.WORLD.isAreaLoaded(this.minimumCoord, this.maximumCoord)) {
 
 				int minChunkX = WorldHelper.getChunkXFromBlock(this.minimumCoord);
 				int minChunkZ = WorldHelper.getChunkZFromBlock(this.minimumCoord);
@@ -526,7 +527,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 				for(int x = minChunkX; x <= maxChunkX; x++) {
 					for(int z = minChunkZ; z <= maxChunkZ; z++) {
 						// Ensure that we save our data, even if the our save delegate is in has no TEs.
-						Chunk chunkToSave = this.worldObj.getChunkFromChunkCoords(x, z);
+						Chunk chunkToSave = this.WORLD.getChunkFromChunkCoords(x, z);
 						chunkToSave.setChunkModified();
 					}
 				}
@@ -706,7 +707,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		else if(res > 0) { return false; }
 		else {
 			// Strip dead parts from both and retry
-			FMLLog.warning("[%s] Encountered two controllers with the same reference coordinate. Auditing connected parts and retrying.", this.worldObj.isRemote ? "CLIENT" : "SERVER");
+			FMLLog.warning("[%s] Encountered two controllers with the same reference coordinate. Auditing connected parts and retrying.", this.WORLD.isRemote ? "CLIENT" : "SERVER");
 			auditParts();
 			otherController.auditParts();
 			
@@ -716,7 +717,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 			else {
 				FMLLog.severe("My Controller (%d): size (%d), parts: %s", hashCode(), this.connectedParts.size(), this.getPartsListString());
 				FMLLog.severe("Other Controller (%d): size (%d), coords: %s", otherController.hashCode(), otherController.connectedParts.size(), otherController.getPartsListString());
-				throw new IllegalArgumentException("[" + (this.worldObj.isRemote ? "CLIENT" : "SERVER") + "] Two controllers with the same reference coord that somehow both have valid parts - this should never happen!");
+				throw new IllegalArgumentException("[" + (this.WORLD.isRemote ? "CLIENT" : "SERVER") + "] Two controllers with the same reference coord that somehow both have valid parts - this should never happen!");
 			}
 
 		}
@@ -753,14 +754,14 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	private void auditParts() {
 		HashSet<IMultiblockPart> deadParts = new HashSet<IMultiblockPart>();
 		for(IMultiblockPart part : connectedParts) {
-			if(part.isPartInvalid() || worldObj.getTileEntity(part.getWorldPosition()) != part) {
+			if(part.isPartInvalid() || WORLD.getTileEntity(part.getWorldPosition()) != part) {
 				onDetachBlock(part);
 				deadParts.add(part);
 			}
 		}
 
 		connectedParts.removeAll(deadParts);
-		FMLLog.warning("[%s] Controller found %d dead parts during an audit, %d parts remain attached", this.worldObj.isRemote ? "CLIENT" : "SERVER", deadParts.size(), this.connectedParts.size());
+		FMLLog.warning("[%s] Controller found %d dead parts during an audit, %d parts remain attached", this.WORLD.isRemote ? "CLIENT" : "SERVER", deadParts.size(), this.connectedParts.size());
 	}
 
 	/**
@@ -774,12 +775,12 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		}
 		
 		if(this.isEmpty()) {
-			MultiblockRegistry.addDeadController(worldObj, this);
+            REGISTRY.addDeadController(WORLD, this);
 			return null;
 		}
 		
 		TileEntity te;
-		IChunkProvider chunkProvider = worldObj.getChunkProvider();
+		IChunkProvider chunkProvider = WORLD.getChunkProvider();
 
 		// Invalidate our reference coord, we'll recalculate it shortly
 		referenceCoord = null;
@@ -800,7 +801,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 				continue;
 			}
 			
-			if(worldObj.getTileEntity(position) != part) {
+			if(WORLD.getTileEntity(position) != part) {
 				deadParts.add(part);
 				onDetachBlock(part);
 				continue;
@@ -825,7 +826,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		if(referencePart == null || isEmpty()) {
 			// There are no valid parts remaining. The entire multiblock was unloaded during a chunk unload. Halt.
 			shouldCheckForDisconnections = false;
-			MultiblockRegistry.addDeadController(worldObj, this);
+            REGISTRY.addDeadController(WORLD, this);
 			return null;
 		}
 		else {
@@ -893,9 +894,9 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 * @return A set of all parts which still have a valid tile entity.
 	 */
 	public Set<IMultiblockPart> detachAllBlocks() {
-		if(worldObj == null) { return new HashSet<IMultiblockPart>(); }
+		if(WORLD == null) { return new HashSet<IMultiblockPart>(); }
 		
-		IChunkProvider chunkProvider = worldObj.getChunkProvider();
+		IChunkProvider chunkProvider = WORLD.getChunkProvider();
 		for(IMultiblockPart part : connectedParts) {
 			if(WorldHelper.blockChunkExists(chunkProvider, part.getWorldPosition())) {
 				onDetachBlock(part);
@@ -915,7 +916,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	}
 	
 	private void selectNewReferenceCoord() {
-		IChunkProvider chunkProvider = worldObj.getChunkProvider();
+		IChunkProvider chunkProvider = WORLD.getChunkProvider();
 		IMultiblockPart theChosenOne = null;
 		BlockPos position;
 
@@ -953,8 +954,8 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		BlockPos rc = getReferenceCoord();
 		IBlockState state;
 
-		if ((worldObj != null) && (rc != null) && ((state = worldObj.getBlockState(rc)) != null)) {
-			worldObj.notifyBlockUpdate(rc, state, state, 3);
+		if ((WORLD != null) && (rc != null) && ((state = WORLD.getBlockState(rc)) != null)) {
+			WORLD.notifyBlockUpdate(rc, state, state, 3);
 		}
 	}
 	
@@ -969,12 +970,18 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 * @see MultiblockControllerBase#markReferenceCoordForUpdate()
 	 */
 	protected void markReferenceCoordDirty() {
-		if(worldObj == null || worldObj.isRemote) { return; }
+		if(WORLD == null || WORLD.isRemote) { return; }
 
 		BlockPos referenceCoord = this.getReferenceCoord();
 		if(referenceCoord == null) { return; }
 
-		TileEntity saveTe = worldObj.getTileEntity(referenceCoord);
-		worldObj.markChunkDirty(referenceCoord, saveTe);
+		TileEntity saveTe = WORLD.getTileEntity(referenceCoord);
+		WORLD.markChunkDirty(referenceCoord, saveTe);
 	}
+
+	private static final IMultiblockRegistry REGISTRY;
+
+    static {
+        REGISTRY = ZeroCore.getProxy().initMultiblockRegistry();
+    }
 }

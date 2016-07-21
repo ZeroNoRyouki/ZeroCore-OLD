@@ -77,7 +77,7 @@ public abstract class RectangularMultiblockControllerBase extends
 				for(int z = minZ; z <= maxZ; z++) {
 					// Okay, figure out what sort of block this should be.
 					
-					te = this.worldObj.getTileEntity(new BlockPos(x, y, z));
+					te = this.WORLD.getTileEntity(new BlockPos(x, y, z));
 					if(te instanceof RectangularMultiblockTileEntityBase) {
 						part = (RectangularMultiblockTileEntityBase)te;
 						
@@ -106,7 +106,7 @@ public abstract class RectangularMultiblockControllerBase extends
 
 					if(extremes >= 2) {
 
-						isPartValid = part != null ? part.isGoodForFrame(validatorCallback) : this.isBlockGoodForFrame(this.worldObj, x, y, z, validatorCallback);
+						isPartValid = part != null ? part.isGoodForFrame(validatorCallback) : this.isBlockGoodForFrame(this.WORLD, x, y, z, validatorCallback);
 
 						if (!isPartValid) {
 
@@ -119,7 +119,7 @@ public abstract class RectangularMultiblockControllerBase extends
 					else if(extremes == 1) {
 						if(y == maxY) {
 
-							isPartValid = part != null ? part.isGoodForTop(validatorCallback) : this.isBlockGoodForTop(this.worldObj, x, y, z, validatorCallback);
+							isPartValid = part != null ? part.isGoodForTop(validatorCallback) : this.isBlockGoodForTop(this.WORLD, x, y, z, validatorCallback);
 
 							if (!isPartValid) {
 
@@ -131,7 +131,7 @@ public abstract class RectangularMultiblockControllerBase extends
 						}
 						else if(y == minY) {
 
-							isPartValid = part != null ? part.isGoodForBottom(validatorCallback) : this.isBlockGoodForBottom(this.worldObj, x, y, z, validatorCallback);
+							isPartValid = part != null ? part.isGoodForBottom(validatorCallback) : this.isBlockGoodForBottom(this.WORLD, x, y, z, validatorCallback);
 
 							if (!isPartValid) {
 
@@ -143,7 +143,7 @@ public abstract class RectangularMultiblockControllerBase extends
 						}
 						else {
 							// Side
-							isPartValid = part != null ? part.isGoodForSides(validatorCallback) : this.isBlockGoodForSides(this.worldObj, x, y, z, validatorCallback);
+							isPartValid = part != null ? part.isGoodForSides(validatorCallback) : this.isBlockGoodForSides(this.WORLD, x, y, z, validatorCallback);
 
 							if (!isPartValid) {
 
@@ -156,7 +156,7 @@ public abstract class RectangularMultiblockControllerBase extends
 					}
 					else {
 
-						isPartValid = part != null ? part.isGoodForInterior(validatorCallback) : this.isBlockGoodForInterior(this.worldObj, x, y, z, validatorCallback);
+						isPartValid = part != null ? part.isGoodForInterior(validatorCallback) : this.isBlockGoodForInterior(this.WORLD, x, y, z, validatorCallback);
 
 						if (!isPartValid) {
 

@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLLog;
+import zero.mods.zerocore.internal.ZeroCore;
 import zero.mods.zerocore.lib.block.ModTileEntity;
 
 /**
@@ -167,7 +168,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 
 	/**
 	 * This is called when a block is being marked as valid by the chunk, but has not yet fully
-	 * been placed into the world's TileEntity cache. this.worldObj, xCoord, yCoord and zCoord have
+	 * been placed into the world's TileEntity cache. this.WORLD, xCoord, yCoord and zCoord have
 	 * been initialized, but any attempts to read data about the world can cause infinite loops -
 	 * if you call getTileEntity on this TileEntity's coordinate from within validate(), you will
 	 * blow your call stack.
@@ -178,7 +179,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	@Override
 	public void validate() {
 		super.validate();
-		MultiblockRegistry.onPartAdded(this.worldObj, this);
+        REGISTRY.onPartAdded(this.worldObj, this);
 	}
 
 	/*
@@ -336,12 +337,12 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 		/*
 		for(BlockPos neighbor : neighbors) {
 
-			if (!this.worldObj.isBlockLoaded(neighbor)) {
+			if (!this.WORLD.isBlockLoaded(neighbor)) {
 				// Chunk not loaded, skip it.
 				continue;
 			}
 
-			te = this.worldObj.getTileEntity(neighbor);
+			te = this.WORLD.getTileEntity(neighbor);
 			if(te instanceof IMultiblockPart) {
 				neighborParts.add((IMultiblockPart)te);
 			}
@@ -388,7 +389,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 
 	@Deprecated // not implemented yet
 	protected void notifyNeighborsOfTileChange() {
-		//worldObj.func_147453_f(xCoord, yCoord, zCoord, getBlockType());
+		//WORLD.func_147453_f(xCoord, yCoord, zCoord, getBlockType());
 
 	}
 	
@@ -406,6 +407,12 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 		}
 
 		// Clean part out of lists in the registry
-		MultiblockRegistry.onPartRemovedFromWorld(worldObj, this);
+        REGISTRY.onPartRemovedFromWorld(worldObj, this);
 	}
+
+    private static final IMultiblockRegistry REGISTRY;
+
+    static {
+        REGISTRY = ZeroCore.getProxy().initMultiblockRegistry();
+    }
 }
