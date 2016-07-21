@@ -10,11 +10,6 @@ package zero.mods.zerocore.api.multiblock;
  * https://github.com/ZeroNoRyouki/ZeroCore
  */
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -22,6 +17,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLLog;
 import zero.mods.zerocore.internal.ZeroCore;
 import zero.mods.zerocore.lib.block.ModTileEntity;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Base logic class for Multiblock-connected tile entities. Most multiblock machines

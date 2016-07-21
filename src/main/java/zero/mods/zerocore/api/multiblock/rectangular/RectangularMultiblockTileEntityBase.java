@@ -12,10 +12,10 @@ package zero.mods.zerocore.api.multiblock.rectangular;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
-import zero.mods.zerocore.lib.BlockFacings;
 import zero.mods.zerocore.api.multiblock.MultiblockControllerBase;
 import zero.mods.zerocore.api.multiblock.MultiblockTileEntityBase;
+import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
+import zero.mods.zerocore.lib.BlockFacings;
 
 import javax.annotation.Nullable;
 

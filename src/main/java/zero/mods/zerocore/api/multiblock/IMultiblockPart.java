@@ -10,9 +10,10 @@ package zero.mods.zerocore.api.multiblock;
  * https://github.com/ZeroNoRyouki/ZeroCore
  */
 
-import java.util.Set;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.Set;
 
 /**
  * Basic interface for a multiblock machine part.

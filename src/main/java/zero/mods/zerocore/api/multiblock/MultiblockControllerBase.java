@@ -10,10 +10,6 @@ package zero.mods.zerocore.api.multiblock;
  * https://github.com/ZeroNoRyouki/ZeroCore
  */
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -27,6 +23,10 @@ import zero.mods.zerocore.api.multiblock.validation.ValidationError;
 import zero.mods.zerocore.internal.ZeroCore;
 import zero.mods.zerocore.lib.block.ModTileEntity;
 import zero.mods.zerocore.util.WorldHelper;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 
 /**

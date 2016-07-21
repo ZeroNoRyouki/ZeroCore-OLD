@@ -1,8 +1,6 @@
 package zero.mods.zerocore.util;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.asm.transformers.ItemStackTransformer;
 import net.minecraftforge.oredict.OreDictionary;
 
 public final class OreDictionaryHelper {

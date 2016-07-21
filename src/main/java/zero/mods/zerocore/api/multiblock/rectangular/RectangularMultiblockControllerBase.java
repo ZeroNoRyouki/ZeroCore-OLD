@@ -13,8 +13,8 @@ package zero.mods.zerocore.api.multiblock.rectangular;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import zero.mods.zerocore.api.multiblock.MultiblockControllerBase;
+import zero.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import zero.mods.zerocore.api.multiblock.validation.ValidationError;
 
 public abstract class RectangularMultiblockControllerBase extends
