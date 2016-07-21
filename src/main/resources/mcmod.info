@@ -5,7 +5,7 @@
   "description": "PUT-THE-MOD-DESCRIPTION-HERE",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "http://zerono.it/",
   "updateUrl": "",
   "authorList": ["ZeroNoRyouki"],
   "credits": "PUT-THE-CREDITS-HERE",
