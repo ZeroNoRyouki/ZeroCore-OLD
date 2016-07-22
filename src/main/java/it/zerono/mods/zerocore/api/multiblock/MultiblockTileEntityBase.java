@@ -85,7 +85,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	@Override
 	public void assertDetached() {
 		if(this.controller != null) {
-			BlockPos coord = this.getPos();
+			BlockPos coord = this.getWorldPosition();
 
 			FMLLog.info("[assert] Part @ (%d, %d, %d) should be detached already, but detected that it was not. This is not a fatal error, and will be repaired, but is unusual.",
 					coord.getX(), coord.getY(), coord.getZ());
@@ -321,37 +321,9 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	
 	@Override
 	public IMultiblockPart[] getNeighboringParts() {
-		/*
-		BlockPos myPosition = this.getPos();
-		BlockPos[] neighbors = new BlockPos[] {
-				myPosition.west(),
-				myPosition.down(),
-				myPosition.north(),
-				myPosition.south(),
-				myPosition.up(),
-				myPosition.east()
-		};
-		*/
+
 		TileEntity te;
 		List<IMultiblockPart> neighborParts = new ArrayList<IMultiblockPart>();
-		/*
-		for(BlockPos neighbor : neighbors) {
-
-			if (!this.WORLD.isBlockLoaded(neighbor)) {
-				// Chunk not loaded, skip it.
-				continue;
-			}
-
-			te = this.WORLD.getTileEntity(neighbor);
-			if(te instanceof IMultiblockPart) {
-				neighborParts.add((IMultiblockPart)te);
-			}
-		}
-		IMultiblockPart[] tmp = new IMultiblockPart[neighborParts.size()];
-		return neighborParts.toArray(tmp);
-			*/
-		//////
-
 		BlockPos neighborPosition, partPosition = this.getWorldPosition();
 
 		for (EnumFacing facing : EnumFacing.VALUES) {
@@ -369,7 +341,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	@Override
 	public void onOrphaned(MultiblockControllerBase controller, int oldSize, int newSize) {
 		this.markDirty();
-		worldObj.markChunkDirty(this.getPos(), this);
+		worldObj.markChunkDirty(this.getWorldPosition(), this);
 	}
 
 	@Override
@@ -384,7 +356,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 
 	//// Helper functions for notifying neighboring blocks
 	protected void notifyNeighborsOfBlockChange() {
-		worldObj.notifyNeighborsOfStateChange(this.getPos(), this.getBlockType());
+		worldObj.notifyNeighborsOfStateChange(this.getWorldPosition(), this.getBlockType());
 	}
 
 	@Deprecated // not implemented yet

@@ -464,7 +464,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 */
 	private void _onAssimilated(MultiblockControllerBase otherController) {
 		if(referenceCoord != null) {
-			if(WorldHelper.blockChunkExists(WORLD.getChunkProvider(), referenceCoord)) {
+			if (this.WORLD.isBlockLoaded(this.referenceCoord)) {
 				TileEntity te = this.WORLD.getTileEntity(this.referenceCoord);
 				if(te instanceof IMultiblockPart) {
 					((IMultiblockPart)te).forfeitMultiblockSaveDelegate();
@@ -795,7 +795,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		for(IMultiblockPart part : connectedParts) {
 			position = part.getWorldPosition();
 			// This happens during chunk unload.
-			if (!WorldHelper.blockChunkExists(chunkProvider, position) || part.isPartInvalid()) {
+			if (!this.WORLD.isBlockLoaded(position) || part.isPartInvalid()) {
 				deadParts.add(part);
 				onDetachBlock(part);
 				continue;
@@ -898,7 +898,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 		
 		IChunkProvider chunkProvider = WORLD.getChunkProvider();
 		for(IMultiblockPart part : connectedParts) {
-			if(WorldHelper.blockChunkExists(chunkProvider, part.getWorldPosition())) {
+			if(this.WORLD.isBlockLoaded(part.getWorldPosition())) {
 				onDetachBlock(part);
 			}
 		}
@@ -924,7 +924,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 
 		for(IMultiblockPart part : connectedParts) {
 			position = part.getWorldPosition();
-			if(part.isPartInvalid() || !WorldHelper.blockChunkExists(chunkProvider, position)) {
+			if(part.isPartInvalid() || !this.WORLD.isBlockLoaded(position)) {
 				// Chunk is unloading, skip this coord to prevent chunk thrashing
 				continue;
 			}

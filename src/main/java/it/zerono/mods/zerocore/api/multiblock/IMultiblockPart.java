@@ -20,7 +20,7 @@ import java.util.Set;
  * Preferably, you should derive from MultiblockTileEntityBase,
  * which does all the hard work for you.
  * 
- * {@link zero.mods.zerocore.api.multiblock.MultiblockTileEntityBase}
+ * {@link it.zerono.mods.zerocore.api.multiblock.MultiblockTileEntityBase}
  */
 public interface IMultiblockPart {
 
