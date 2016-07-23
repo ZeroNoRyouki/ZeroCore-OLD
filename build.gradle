@@ -20,12 +20,12 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.9.4-0.0.2"
+version = "1.10.2-0.0.2"
 group= "it.zerono.mods.zerocore" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "zerocore"
 
 minecraft {
-    version = "1.9.4-12.17.0.1976"
+    version = "1.10.2-12.18.1.2018"
 	
 	if (file('../run').exists()) {
 		runDir = "../run"
