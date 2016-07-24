@@ -3,7 +3,7 @@ Utility mod and multiblock API
 
 
 This is the last incarnation of my "base/utility" mod for MC 1.9.4 / 1.10.2. It contains code for standard activities such as networking, GUI handling, tile entities synchronization
-It also contains that multiblock library at the base of my port of Big Reactor to 1.9.4 / 1.10.2, adapted to work with multiple clients mods
+It also contains the multiblock API at the base of my port of Big Reactor to 1.9.4 / 1.10.2, adapted to work with multiple clients mods. I'm currently working on a tutorial on how to use the API but for the moment you can see a working example in my test mod: https://github.com/ZeroNoRyouki/ZeroTest
 
 # License
 
