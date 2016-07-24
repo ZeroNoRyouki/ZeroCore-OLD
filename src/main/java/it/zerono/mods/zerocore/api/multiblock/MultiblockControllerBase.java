@@ -496,7 +496,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	/**
 	 * Driver for the update loop. If the machine is assembled, runs
 	 * the game logic update method.
-	 * @see zero.mods.zerocore.api.multiblock.MultiblockControllerBase#updateServer()
+	 * @see it.zerono.mods.zerocore.api.multiblock.MultiblockControllerBase#updateServer()
 	 */
 	public final void updateMultiblockEntity() {
 		if(connectedParts.isEmpty()) {
@@ -615,9 +615,19 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 * Data synchronization
 	 */
 
-	protected abstract void syncDataFromServer(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
+	/*
+	 * Sync controller data from the given NBT compound
+	 * @param data the data
+	 * @param syncReason the reason why the synchronization is necessary
+	 */
+	protected abstract void syncDataFrom(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
 
-	protected abstract void syncDataToClient(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
+	/**
+	 * Sync controller data to the given NBT compound
+	 * @param data the data
+	 * @param syncReason the reason why the synchronization is necessary
+	 */
+	protected abstract void syncDataTo(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
 
 	/**
 	 * Force this multiblock to recalculate its minimum and maximum coordinates
