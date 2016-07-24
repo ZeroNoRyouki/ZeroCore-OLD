@@ -13,7 +13,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven'
 
-version = "1.10.2-0.0.2"
+version = "1.10.2-0.0.4"
 group= "it.zerono.mods.zerocore" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "zerocore"
 
@@ -25,6 +25,7 @@ minecraft {
 	} else {
 		runDir = "run"
 	}
+	
     mappings = "snapshot_20160518"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
@@ -56,10 +57,18 @@ processResources
     }
 }
 
+jar {
+
+    from sourceSets.main.output
+    from sourceSets.api.output
+    classifier = ""
+}
+
 //Creates the source jar.
 task sourcesJar(type: Jar, dependsOn: classes) {
 
     from sourceSets.main.allSource
+	from sourceSets.api.allSource
     classifier = 'sources'
 }
 
@@ -74,11 +83,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 task deobfJar(type: Jar) {
 
     from sourceSets.main.output
+	from sourceSets.api.output
     classifier = "deobf"
 }
 
 artifacts {
 
+	archives jar
     archives deobfJar
     archives sourcesJar
     archives javadocJar
