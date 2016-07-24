@@ -13,6 +13,7 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven'
 
 /*
 // for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
@@ -42,6 +43,10 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+configurations {
+    deployerJars
+}
+
 dependencies {
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
@@ -63,7 +68,6 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
 }
 
 processResources
@@ -83,5 +87,56 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+//Creates the source jar.
+task sourcesJar(type: Jar, dependsOn: classes) {
+
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+//Creates the JavaDoc jar.
+task javadocJar(type: Jar, dependsOn: javadoc) {
+
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+//Creates the deobfuscated jar.
+task deobfJar(type: Jar) {
+
+    from sourceSets.main.output
+    classifier = "deobf"
+}
+
+artifacts {
+
+    archives deobfJar
+    archives sourcesJar
+    archives javadocJar
+}
+
+uploadArchives {
+
+    repositories {
+
+        mavenDeployer {
+
+            repository(url: "file://C:\\MC\\ForgeDEV\\Mod Workspace\\ZeroCore\\maven")
+        }
+    }
+}
+
+//Prevents incomplete JavaDocs from preventing a build on Java 8.
+if (JavaVersion.current().isJava8Compatible()) {
+
+    allprojects {
+
+        tasks.withType(Javadoc) {
+
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
     }
 }
