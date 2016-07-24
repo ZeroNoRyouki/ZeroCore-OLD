@@ -496,7 +496,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	/**
 	 * Driver for the update loop. If the machine is assembled, runs
 	 * the game logic update method.
-	 * @see zero.mods.zerocore.api.multiblock.MultiblockControllerBase#updateServer()
+	 * @see it.zerono.mods.zerocore.api.multiblock.MultiblockControllerBase#updateServer()
 	 */
 	public final void updateMultiblockEntity() {
 		if(connectedParts.isEmpty()) {
@@ -615,9 +615,19 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 * Data synchronization
 	 */
 
-	protected abstract void syncDataFromServer(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
+	/**
+	 * Sync controller data from the given NBT compound
+	 * @param data the data
+	 * @param syncReason the reason why the synchronization is necessary
+	 */
+	protected abstract void syncDataFrom(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
 
-	protected abstract void syncDataToClient(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
+	/**
+	 * Sync controller data to the given NBT compound
+	 * @param data the data
+	 * @param syncReason the reason why the synchronization is necessary
+	 */
+	protected abstract void syncDataTo(NBTTagCompound data, ModTileEntity.SyncReason syncReason);
 
 	/**
 	 * Force this multiblock to recalculate its minimum and maximum coordinates
@@ -951,12 +961,11 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 * On the client, this will mark the block for a rendering update.
 	 */
 	protected void markReferenceCoordForUpdate() {
-		BlockPos rc = getReferenceCoord();
-		IBlockState state;
 
-		if ((WORLD != null) && (rc != null) && ((state = WORLD.getBlockState(rc)) != null)) {
-			WORLD.notifyBlockUpdate(rc, state, state, 3);
-		}
+		BlockPos rc = this.getReferenceCoord();
+
+		if ((this.WORLD != null) && (rc != null))
+			WorldHelper.notifyBlockUpdate(this.WORLD, rc, null, null);
 	}
 	
 	/**
@@ -977,6 +986,13 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 
 		TileEntity saveTe = WORLD.getTileEntity(referenceCoord);
 		WORLD.markChunkDirty(referenceCoord, saveTe);
+	}
+
+	/**
+	 * Marks the whole multiblock for a render update on the client. On the server, this does nothing
+	*/
+	protected void markMultiblockForRenderUpdate() {
+		this.WORLD.markBlockRangeForRenderUpdate(this.getMinimumCoord(), this.getMaximumCoord());
 	}
 
 	private static final IMultiblockRegistry REGISTRY;

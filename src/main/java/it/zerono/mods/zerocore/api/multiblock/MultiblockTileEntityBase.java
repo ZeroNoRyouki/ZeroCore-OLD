@@ -111,7 +111,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 			if(data.hasKey("multiblockData")) {
 				NBTTagCompound tag = data.getCompoundTag("multiblockData");
 				if(isConnected()) {
-					getMultiblockController().syncDataFromServer(tag, syncReason);
+					getMultiblockController().syncDataFrom(tag, syncReason);
 				}
 				else {
 					// This part hasn't been added to a machine yet, so cache the data.
@@ -128,7 +128,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 
 			if (isMultiblockSaveDelegate() && isConnected()) {
 				NBTTagCompound multiblockData = new NBTTagCompound();
-				this.controller.syncDataToClient(multiblockData, syncReason);
+				this.controller.syncDataTo(multiblockData, syncReason);
 				data.setTag("multiblockData", multiblockData);
 			}
 
@@ -136,7 +136,7 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 
 			if (this.isMultiblockSaveDelegate() && isConnected()) {
 				NBTTagCompound tag = new NBTTagCompound();
-				getMultiblockController().syncDataToClient(tag, syncReason);
+				getMultiblockController().syncDataTo(tag, syncReason);
 				data.setTag("multiblockData", tag);
 			}
 
@@ -182,55 +182,6 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
         REGISTRY.onPartAdded(this.worldObj, this);
 	}
 
-	/*
-	// Network Communication
-	@Override
-	public Packet getDescriptionPacket() {
-		NBTTagCompound packetData = new NBTTagCompound();
-		encodeDescriptionPacket(packetData);
-		return new SPacketUpdateTileEntity(this.getPos(), 0, packetData);
-	}
-	
-	@Override
-	public void onDataPacket(NetworkManager network, SPacketUpdateTileEntity packet) {
-		this.decodeDescriptionPacket(packet.getNbtCompound());
-	}*/
-	
-	///// Things to override in most implementations (IMultiblockPart)
-	/**
-	 * Override this to easily modify the description packet's data without having
-	 * to worry about sending the packet itself.
-	 * Decode this data in decodeDescriptionPacket.
-	 * @param packetData An NBT compound tag into which you should write your custom description data.
-	 * @see zero.mods.zerocore.api.multiblock.MultiblockTileEntityBase#decodeDescriptionPacket(NBTTagCompound)
-	 *//*
-	protected void encodeDescriptionPacket(NBTTagCompound packetData) {
-		if(this.isMultiblockSaveDelegate() && isConnected()) {
-			NBTTagCompound tag = new NBTTagCompound();
-			getMultiblockController().formatDescriptionPacket(tag);
-			packetData.setTag("multiblockData", tag);
-		}
-	}*/
-	
-	/**
-	 * Override this to easily read in data from a TileEntity's description packet.
-	 * Encoded in encodeDescriptionPacket.
-	 * @param packetData The NBT data from the tile entity's description packet.
-	 * @see zero.mods.zerocore.api.multiblock.MultiblockTileEntityBase#encodeDescriptionPacket(NBTTagCompound)
-	 *//*
-	protected void decodeDescriptionPacket(NBTTagCompound packetData) {
-		if(packetData.hasKey("multiblockData")) {
-			NBTTagCompound tag = packetData.getCompoundTag("multiblockData");
-			if(isConnected()) {
-				getMultiblockController().decodeDescriptionPacket(tag);
-			}
-			else {
-				// This part hasn't been added to a machine yet, so cache the data.
-				this.cachedMultiblockData = tag;
-			}
-		}
-	}*/
-
 	@Override
 	public boolean hasMultiblockSaveData() {
 		return this.cachedMultiblockData != null;
@@ -246,8 +197,6 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 		this.cachedMultiblockData = null;
 	}
 
-	///// Game logic callbacks (IMultiblockPart)
-	
 	@Override
 	public abstract void onMachineAssembled(MultiblockControllerBase multiblockControllerBase);
 
@@ -260,8 +209,6 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 	@Override
 	public abstract void onMachineDeactivated();
 
-	///// Miscellaneous multiblock-assembly callbacks and support methods (IMultiblockPart)
-	
 	@Override
 	public boolean isConnected() {
 		return (controller != null);
@@ -380,6 +327,18 @@ public abstract class MultiblockTileEntityBase extends ModTileEntity implements 
 
 		// Clean part out of lists in the registry
         REGISTRY.onPartRemovedFromWorld(worldObj, this);
+	}
+
+	/**
+	 * IF the part is connected to a multiblock controller, marks the whole multiblock for a render update on the client.
+	 * On the server, this does nothing
+	 */
+	protected void markMultiblockForRenderUpdate() {
+
+		MultiblockControllerBase controller = this.getMultiblockController();
+
+		if (null != controller)
+			controller.markMultiblockForRenderUpdate();
 	}
 
     private static final IMultiblockRegistry REGISTRY;

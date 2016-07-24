@@ -19,8 +19,7 @@ import it.zerono.mods.zerocore.lib.BlockFacings;
 
 import javax.annotation.Nullable;
 
-public abstract class RectangularMultiblockTileEntityBase extends
-		MultiblockTileEntityBase {
+public abstract class RectangularMultiblockTileEntityBase extends MultiblockTileEntityBase {
 
 	private PartPosition position;
 	private BlockFacings outwardFacings;
