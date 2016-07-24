@@ -13,7 +13,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven'
 
-version = "1.9.4-0.0.2"
+version = "1.9.4-0.0.4"
 group= "it.zerono.mods.zerocore" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "zerocore"
 
@@ -57,10 +57,18 @@ processResources
     }
 }
 
+jar {
+
+    from sourceSets.main.output
+    from sourceSets.api.output
+    classifier = ""
+}
+
 //Creates the source jar.
 task sourcesJar(type: Jar, dependsOn: classes) {
 
     from sourceSets.main.allSource
+    from sourceSets.api.allSource
     classifier = 'sources'
 }
 
@@ -75,11 +83,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 task deobfJar(type: Jar) {
 
     from sourceSets.main.output
+    from sourceSets.api.output
     classifier = "deobf"
 }
 
 artifacts {
 
+    archives jar
     archives deobfJar
     archives sourcesJar
     archives javadocJar
