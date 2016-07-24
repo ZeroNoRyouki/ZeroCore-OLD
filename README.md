@@ -42,3 +42,6 @@ Contribution to this repository means that you are granting us rights over the c
 Essentially, take this and learn from it! Create addon mods that depend on it! If you see something we can improve, tell us. Submit a Pull Request. The one catch: don't steal! A lot of effort has gone into this, and if you were to take this and call it your own, you'd basically be a big jerk.
 
 Don't be a jerk. 
+
+
+This license text was adapted from the CoFHCore license available at https://github.com/CoFH/CoFHCore/blob/master/README.md
