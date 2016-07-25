@@ -24,9 +24,9 @@ repositories {
 }
 
 dependencies {
-
     compile group: "it.zerono.mods.zerocore", name: "zerocore", version: "1.10.2-0.0.2"
 }
+
 
 # License
 
