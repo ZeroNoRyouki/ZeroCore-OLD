@@ -27,6 +27,7 @@ dependencies {
     compile group: "it.zerono.mods.zerocore", name: "zerocore", version: "1.10.2-0.0.4"
 }
 
+A brief tutorial on how to use the multiblock API is available here: http://zerono.it/zerocore-multiblock-api-tutorial/
 
 # License
 
