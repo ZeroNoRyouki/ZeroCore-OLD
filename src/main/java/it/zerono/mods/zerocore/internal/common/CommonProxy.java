@@ -1,7 +1,7 @@
 package it.zerono.mods.zerocore.internal.common;
 
-import net.minecraftforge.common.MinecraftForge;
 import it.zerono.mods.zerocore.api.multiblock.IMultiblockRegistry;
+import net.minecraftforge.common.MinecraftForge;
 
 public class CommonProxy {
 
