@@ -1,12 +1,12 @@
 package it.zerono.mods.zerocore.lib.gui;
 
+import it.zerono.mods.zerocore.lib.block.ModTileEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import it.zerono.mods.zerocore.lib.block.ModTileEntity;
 
 public class ModGuiHandler implements IGuiHandler {
 

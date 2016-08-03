@@ -1,5 +1,6 @@
 package it.zerono.mods.zerocore.lib.client.render;
 
+import it.zerono.mods.zerocore.lib.BlockFacings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -15,7 +16,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import it.zerono.mods.zerocore.lib.BlockFacings;
 
 @SideOnly(Side.CLIENT)
 public final class ModRenderHelper {

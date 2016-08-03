@@ -10,13 +10,13 @@ package it.zerono.mods.zerocore.api.multiblock;
  * https://github.com/ZeroNoRyouki/ZeroCore
  */
 
+import it.zerono.mods.zerocore.internal.ZeroCore;
+import it.zerono.mods.zerocore.lib.block.ModTileEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLLog;
-import it.zerono.mods.zerocore.internal.ZeroCore;
-import it.zerono.mods.zerocore.lib.block.ModTileEntity;
 
 import java.util.ArrayList;
 import java.util.HashSet;

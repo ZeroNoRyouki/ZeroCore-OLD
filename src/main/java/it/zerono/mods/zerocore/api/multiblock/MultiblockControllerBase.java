@@ -10,6 +10,11 @@ package it.zerono.mods.zerocore.api.multiblock;
  * https://github.com/ZeroNoRyouki/ZeroCore
  */
 
+import it.zerono.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
+import it.zerono.mods.zerocore.api.multiblock.validation.ValidationError;
+import it.zerono.mods.zerocore.internal.ZeroCore;
+import it.zerono.mods.zerocore.lib.block.ModTileEntity;
+import it.zerono.mods.zerocore.util.WorldHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -17,11 +22,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.FMLLog;
-import it.zerono.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
-import it.zerono.mods.zerocore.api.multiblock.validation.ValidationError;
-import it.zerono.mods.zerocore.internal.ZeroCore;
-import it.zerono.mods.zerocore.lib.block.ModTileEntity;
-import it.zerono.mods.zerocore.util.WorldHelper;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -614,7 +614,7 @@ public abstract class MultiblockControllerBase implements IMultiblockValidator {
 	 * Data synchronization
 	 */
 
-	/**
+	/*
 	 * Sync controller data from the given NBT compound
 	 * @param data the data
 	 * @param syncReason the reason why the synchronization is necessary

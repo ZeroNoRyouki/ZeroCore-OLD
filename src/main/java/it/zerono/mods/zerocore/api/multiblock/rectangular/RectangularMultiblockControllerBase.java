@@ -10,12 +10,12 @@ package it.zerono.mods.zerocore.api.multiblock.rectangular;
  * https://github.com/ZeroNoRyouki/ZeroCore
  */
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import it.zerono.mods.zerocore.api.multiblock.MultiblockControllerBase;
 import it.zerono.mods.zerocore.api.multiblock.validation.IMultiblockValidator;
 import it.zerono.mods.zerocore.api.multiblock.validation.ValidationError;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public abstract class RectangularMultiblockControllerBase extends MultiblockControllerBase {
 
