@@ -22,9 +22,9 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-version = "${config.mod_version_major}.${config.mod_version_api}.${config.mod_version_minor}.${config.mod_version_patch}"
+version = "${config.minecraft_version}-${config.mod_version_major}.${config.mod_version_api}.${config.mod_version_minor}.${config.mod_version_patch}"
 group = "${config.group_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "${config.mod_id}-${config.minecraft_version}"
+archivesBaseName = "${config.mod_id}"
 
 minecraft {
     version = "${config.forge_version}"
@@ -40,7 +40,6 @@ minecraft {
 	replaceIn "References.java"
     replace "@VERSION@", project.version
 	replace "@MC_VERSION@", config.minecraft_version
-	
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
