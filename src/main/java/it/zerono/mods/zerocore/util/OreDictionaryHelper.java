@@ -1,6 +1,7 @@
 package it.zerono.mods.zerocore.util;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
 public final class OreDictionaryHelper {
@@ -22,25 +23,22 @@ public final class OreDictionaryHelper {
         return names;
     }
 
+    /**
+     * Get a copy of the first registered items to this ore type
+     *
+     * @param name the ore name
+     * @return the first ItemStacks registered for this ore or null if the are no ItemStacks registered
+     */
     public static ItemStack getOre(String name) {
 
         return !OreDictionaryHelper.doesOreNameExist(name) ? null :
-                OreDictionaryHelper.duplicateStack(OreDictionary.getOres(name).get(0), 1);
+                ItemHandlerHelper.copyStackWithSize(OreDictionary.getOres(name).get(0), 1);
     }
 
     public static boolean doesOreNameExist(String name) {
 
         return OreDictionary.doesOreNameExist(name);
     }
-
-    private static ItemStack duplicateStack(ItemStack stack, int stackSize) {
-
-        ItemStack dup = stack.copy();
-
-        dup.stackSize = stackSize;
-        return dup;
-    }
-
 
     private OreDictionaryHelper() {
     }
