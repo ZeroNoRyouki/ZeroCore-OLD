@@ -17,6 +17,7 @@ import it.zerono.mods.zerocore.lib.BlockFacings;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class RectangularMultiblockTileEntityBase extends MultiblockTileEntityBase {
@@ -37,6 +38,7 @@ public abstract class RectangularMultiblockTileEntityBase extends MultiblockTile
 	 *
 	 * @return the outward facing of the part. A face is "set" in the BlockFacings object if that face is facing outward
 	 */
+	@Nonnull
 	public BlockFacings getOutwardsDir() {
 
 		return outwardFacings;
@@ -47,6 +49,7 @@ public abstract class RectangularMultiblockTileEntityBase extends MultiblockTile
 	 *
 	 * @return the position of the part
 	 */
+	@Nonnull
 	public PartPosition getPartPosition() {
 
 		return position;
