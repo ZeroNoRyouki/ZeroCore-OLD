@@ -3,7 +3,31 @@ Utility mod and multiblock API
 
 
 This is the last incarnation of my "base/utility" mod for MC 1.9.4 / 1.10.2. It contains code for standard activities such as networking, GUI handling, tile entities synchronization
-It also contains that multiblock library at the base of my port of Big Reactor to 1.9.4 / 1.10.2, adapted to work with multiple clients mods
+
+It also contains the multiblock API at the base of my port of Big Reactor to 1.9.4 / 1.10.2, adapted to work with multiple clients mods. I'm currently working on a tutorial on how to use the API but for the moment you can see a working example in my test mod: https://github.com/ZeroNoRyouki/ZeroTest
+
+The multiblock API is a port and adaptation of the original multiblock API used by Big Reactor form Erogenous Beef. The original code can be found at https://github.com/erogenousbeef/BigReactors
+
+# Usage
+
+Binaries for the mod are available at http://minecraft.curseforge.com/projects/zerocore
+
+A maven repository for both Minecraft1.9.4 and 1.10.2 can be found at http://maven.zerono.it
+
+To add ZeroCore to your project insert the following directives in your build.gradle file:
+
+repositories {
+    maven {
+        name "zerocore"
+        url "http://maven.zerono.it/"
+    }
+}
+
+dependencies {
+    compile group: "it.zerono.mods.zerocore", name: "zerocore", version: "1.10.2-0.0.4"
+}
+
+A brief tutorial on how to use the multiblock API is available here: http://zerono.it/zerocore-multiblock-api-tutorial/
 
 # License
 
