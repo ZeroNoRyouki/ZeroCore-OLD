@@ -1,8 +1,11 @@
 package it.zerono.mods.zerocore.util;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
+
+import javax.annotation.Nonnull;
 
 public final class OreDictionaryHelper {
 
@@ -21,6 +24,21 @@ public final class OreDictionaryHelper {
             names[i] = OreDictionary.getOreName(oreIDs[i]);
 
         return names;
+    }
+
+    public static String[] getOreNames(@Nonnull IBlockState state) {
+        return OreDictionaryHelper.getOreNames(ItemHelper.createItemStack(state, 1));
+    }
+
+    public static String getFirstOreName(ItemStack stack) {
+
+        String[] names = null != stack ? OreDictionaryHelper.getOreNames(stack) : null;
+
+        return null != names && names.length > 0 ? names[0] : "";
+    }
+
+    public static String getFirstOreName(@Nonnull IBlockState state) {
+        return OreDictionaryHelper.getFirstOreName(ItemHelper.createItemStack(state, 1));
     }
 
     /**
