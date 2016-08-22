@@ -69,3 +69,10 @@ Don't be a jerk.
 
 
 This license text was adapted from the CoFHCore license available at https://github.com/CoFH/CoFHCore/blob/master/README.md
+
+
+## License of the multiblock API
+
+The multiblock API is licensed under the MIT license
+
+Please read the LICENSE.md in the api/multiblock package
