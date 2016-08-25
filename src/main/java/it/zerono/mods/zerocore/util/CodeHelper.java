@@ -1,5 +1,6 @@
 package it.zerono.mods.zerocore.util;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
@@ -18,6 +19,14 @@ public final class CodeHelper {
             throw new RuntimeException("Cannot retrieve the MOD ID from FML");
 
         return modId;
+    }
+
+    /**
+     * i18n support and helpers
+     */
+
+    public static String i18nValue(boolean value) {
+        return I18n.format(value ? "debug.zerocore.true" : "debug.zerocore.false");
     }
 
 }
