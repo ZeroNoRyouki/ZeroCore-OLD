@@ -11,6 +11,9 @@ public final class OreDictionaryHelper {
 
     public static String[] getOreNames(ItemStack stack) {
 
+        if (null == stack)
+            return null;
+
         String[] names;
         int[] oreIDs = OreDictionary.getOreIDs(stack);
         int count;

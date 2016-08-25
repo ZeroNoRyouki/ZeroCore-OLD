@@ -34,6 +34,10 @@ public final class WorldHelper {
         return world.isRemote;
     }
 
+    public static String getWorldSideName(World world) {
+        return world.isRemote ? "CLIENT" : "SERVER";
+    }
+
     public static boolean isEntityInRange(Entity entity, double x, double y, double z, double range) {
         return entity.getDistanceSq(x + 0.5, y + 0.5, z + 0.5) < (range * range);
     }
